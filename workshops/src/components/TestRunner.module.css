@@ -1,0 +1,264 @@
+.container {
+  margin-top: var(--space-xl);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-bg-tertiary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-bg-tertiary);
+  border-bottom: 1px solid var(--color-bg-tertiary);
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.dotnetIcon {
+  font-size: 16px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.outputToggle {
+  padding: var(--space-xs) var(--space-md);
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-accent-dark);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.outputToggle:hover {
+  border-color: var(--color-accent-primary);
+  color: var(--color-accent-primary);
+}
+
+.runButton {
+  padding: var(--space-xs) var(--space-lg);
+  background: var(--color-accent-primary);
+  color: #000000;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.runButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(72, 189, 184, 0.3);
+}
+
+.runButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.runButton.running {
+  background: var(--color-accent-dark);
+  color: var(--color-text-secondary);
+}
+
+.testList {
+  padding: var(--space-md);
+}
+
+.testCase {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-xs);
+  transition: background var(--transition-fast);
+  min-width: 0;
+}
+
+.testCase.passed {
+  background: rgba(74, 222, 128, 0.1);
+}
+
+.testCase.failed {
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.testIcon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.testCase.passed .testIcon {
+  color: var(--color-success);
+}
+
+.testCase.failed .testIcon {
+  color: var(--color-error);
+}
+
+.testNumber {
+  color: var(--color-text-tertiary);
+  font-size: 12px;
+}
+
+.testInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.testName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-accent-dark) transparent;
+}
+
+.testName::-webkit-scrollbar {
+  height: 4px;
+}
+
+.testName::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.testName::-webkit-scrollbar-thumb {
+  background: var(--color-accent-dark);
+  border-radius: 2px;
+}
+
+.testName::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-primary);
+}
+
+.testDescription {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+}
+
+.testError {
+  font-size: 12px;
+  color: var(--color-error);
+  margin-top: 4px;
+}
+
+.summary {
+  padding: var(--space-md) var(--space-lg);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  border-top: 1px solid var(--color-bg-tertiary);
+}
+
+.successSummary {
+  background: rgba(74, 222, 128, 0.1);
+  color: var(--color-success);
+}
+
+.failedSummary {
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--color-error);
+}
+
+.filterInfo {
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-bg-tertiary);
+}
+
+.filterInfo code {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  background: transparent;
+  padding: 0;
+}
+
+.errorBox {
+  padding: var(--space-md) var(--space-lg);
+  background: rgba(248, 113, 113, 0.1);
+  border-bottom: 1px solid var(--color-bg-tertiary);
+}
+
+.errorBox pre {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  color: var(--color-error);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.outputBox {
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-bg-tertiary);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.outputBox pre {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.spinnerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--color-bg-tertiary);
+  border-top-color: var(--color-accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

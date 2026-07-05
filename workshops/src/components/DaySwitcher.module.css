@@ -1,0 +1,47 @@
+.switcher {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-bg-tertiary);
+  overflow-x: auto;
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: var(--space-sm) var(--space-lg);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.tab:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.tab.active {
+  background: rgba(72, 189, 184, 0.12);
+  border-color: rgba(72, 189, 184, 0.4);
+  color: var(--color-text-primary);
+}
+
+.dayLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-accent-primary);
+}
+
+.dayTitle {
+  font-size: 13px;
+  font-weight: 500;
+}

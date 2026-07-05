@@ -1,0 +1,30 @@
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.toggle:hover {
+  border-color: var(--color-accent-primary);
+}
+
+.flag {
+  color: var(--color-text-tertiary);
+  transition: color var(--transition-fast);
+}
+
+.flag.active {
+  color: var(--color-accent-primary);
+}
+
+.separator {
+  color: var(--color-text-tertiary);
+}

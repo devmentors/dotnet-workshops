@@ -1,0 +1,54 @@
+.container {
+  border: 1px solid var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin: var(--space-md) 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-bg-tertiary);
+  border-bottom: 1px solid var(--color-bg-tertiary);
+}
+
+.language {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+}
+
+.copyButton {
+  padding: 4px 12px;
+  background: transparent;
+  border: 1px solid var(--color-accent-dark);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.copyButton:hover {
+  border-color: var(--color-accent-primary);
+  color: var(--color-accent-primary);
+}
+
+.code {
+  margin: 0;
+  padding: var(--space-lg);
+  background: var(--color-bg-secondary);
+  border: none;
+  border-radius: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.code code {
+  background: transparent;
+  padding: 0;
+}

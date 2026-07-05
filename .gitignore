@@ -1,0 +1,16 @@
+# .NET build output
+bin/
+obj/
+*.user
+
+# IDE / OS
+.vs/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# EF Core SQLite (baza dema Dnia 2)
+*.db
+*.db-shm
+*.db-wal

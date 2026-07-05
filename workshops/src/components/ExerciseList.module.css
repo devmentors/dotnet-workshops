@@ -1,0 +1,176 @@
+.list {
+  padding: var(--space-lg);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-sm);
+  padding: var(--space-xl) var(--space-md);
+  color: var(--color-text-secondary);
+}
+
+.placeholderIcon {
+  font-size: 40px;
+}
+
+.placeholderTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.placeholderText {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-tertiary);
+}
+
+.category {
+  margin-bottom: var(--space-xl);
+}
+
+.categoryTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-tertiary);
+  padding: var(--space-xs) var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.categoryIcon {
+  font-size: 14px;
+}
+
+.exercises {
+  list-style: none;
+}
+
+.exerciseButton {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+  padding: var(--space-sm) var(--space-md);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.exerciseButton:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.exerciseButton.selected {
+  background: rgba(72, 189, 184, 0.1);
+  border-color: rgba(72, 189, 184, 0.3);
+  color: var(--color-text-primary);
+}
+
+.sequenceNumber {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-accent-primary);
+  min-width: 48px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.separator {
+  width: 2px;
+  align-self: stretch;
+  background: var(--color-accent-primary);
+  margin: 0 var(--space-md);
+  border-radius: 1px;
+  min-height: 40px;
+}
+
+.exerciseContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  flex: 1;
+}
+
+.exerciseTitle {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.time {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-accent-primary);
+}
+
+.completedIcon {
+  font-size: 16px;
+  margin-left: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.completed {
+  background: rgba(34, 197, 94, 0.05);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.completedNumber {
+  color: #22c55e !important;
+}
+
+.completedSeparator {
+  background: #22c55e !important;
+}
+
+.surveySection {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-bg-tertiary);
+}
+
+.surveyButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg);
+  background: linear-gradient(135deg, rgba(72, 189, 184, 0.1) 0%, rgba(72, 189, 184, 0.05) 100%);
+  border: 1px solid rgba(72, 189, 184, 0.3);
+  border-radius: var(--radius-md);
+  color: var(--color-accent-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.surveyButton:hover {
+  background: rgba(72, 189, 184, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(72, 189, 184, 0.2);
+}
+
+.surveyIcon {
+  font-size: 18px;
+}
+
+.surveyText {
+  letter-spacing: 0.02em;
+}
