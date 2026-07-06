@@ -1,5 +1,7 @@
 import type { Exercise } from '../types/Exercise';
 import { exercises as dzien1Exercises } from './exercises';
+import { dzien2Exercises } from './exercises-dzien2';
+import { modulAiExercises } from './exercises-modul-ai';
 
 export interface Day {
   id: string;
@@ -29,9 +31,9 @@ export const days: Day[] = [
     title: 'Ekosystem .NET (ASP.NET Core, EF Core)',
     titleEn: '.NET ecosystem (ASP.NET Core, EF Core)',
     folder: 'dzien2-ekosystem',
-    locked: true,
+    locked: false,
     isLast: false,
-    exercises: [],
+    exercises: [...dzien2Exercises, ...modulAiExercises], // + dopinka AI (osobna solucja ai-cwiczenia)
   },
   {
     id: 'dzien3',

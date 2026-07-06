@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Warstwa Core: domena + logika aplikacyjna sklepu, pogrupowana w CAPABILITIES
+       (Catalog / Ordering / Shipping) + Persistence (EF Core). Nie zależy od ASP.NET
+       Core - to zwykła biblioteka. Host (Shop.Api) referencuje ten projekt i spina
+       jego usługi w kontenerze DI oraz wystawia jako endpointy. EF Core żyje tutaj,
+       bo dostęp do danych to część możliwości domenowych, a nie warstwy web. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Shop.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- EF Core: DbContext + zapytania. InMemory dla testów, PostgreSQL (Npgsql) dla `dotnet run`
+         (docker compose up). Provider wybiera host (Shop.Api) przy AddDbContext. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.0" />
+    <!-- Design: migracje dla `dotnet ef` (manifest w .config/dotnet-tools.json). -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" PrivateAssets="all" />
+    <!-- Abstrakcje DI/Options/Cache używane przez usługi Core (rejestrację robi host). -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
+    <!-- Zawiera też IDistributedCache + MemoryDistributedCache (cache-aside w CachedProductService). -->
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
+  </ItemGroup>
+
+</Project>

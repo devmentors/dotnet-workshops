@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AiLab.McpServer.Client</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Oficjalne SDK klienta MCP (Client + Protocol). Exact pin — patrz README modułu. -->
+    <PackageReference Include="ModelContextProtocol" Version="0.5.0-preview.1" />
+  </ItemGroup>
+
+</Project>

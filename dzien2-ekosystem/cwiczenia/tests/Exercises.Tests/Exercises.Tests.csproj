@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <!-- Host ASP.NET Core podnoszony w pamięci (zadania 1 i 2). -->
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
+    <!-- EF Core InMemory: budujemy ShopContext bez bazy (zadanie 5). -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
+    <!-- Testcontainers: opcjonalne ćwiczenie z migracji - jednorazowy Postgres w kontenerze
+         (wymaga Dockera) do Migrate() na realnym providerze. -->
+    <PackageReference Include="Testcontainers.PostgreSql" Version="4.0.0" />
+    <!-- IDistributedCache (MemoryDistributedCache) w teście zadania 7 (cache-aside). -->
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
+    <!-- IOptions w teście Options. -->
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
+    <!-- Kontener DI budowany wprost w teście Dependency Injection (ServiceCollection). -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Shop.Api\Shop.Api.csproj" />
+    <ProjectReference Include="..\..\src\Shop.Core\Shop.Core.csproj" />
+  </ItemGroup>
+
+</Project>

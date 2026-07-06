@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- Host web (warstwa API). Cienki: spina usługi z Shop.Core w kontenerze DI,
+       wystawia je jako endpointy Minimal API pogrupowane po capabilities i trzyma
+       cross-cutting (middleware). Logika domenowa i EF siedzą w Shop.Core. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Shop.Api</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shop.Core\Shop.Core.csproj" />
+  </ItemGroup>
+
+</Project>

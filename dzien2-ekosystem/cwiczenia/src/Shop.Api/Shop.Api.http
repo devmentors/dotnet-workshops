@@ -1,0 +1,6 @@
+@host = http://localhost:5000
+
+POST {{host}}/products/1/price
+Content-Type: application/json
+
+{ "price": 49.00 }
