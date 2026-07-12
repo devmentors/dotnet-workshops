@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Packable</RootNamespace>
+
+    <PackageId>DevMentors.Workshop.TextKit</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>DevMentors</Authors>
+    <Description>Pomocnicze funkcje tekstowe i wersjonowanie - biblioteka demonstracyjna do zadania o pakowaniu NuGet.</Description>
+  </PropertyGroup>
+
+</Project>

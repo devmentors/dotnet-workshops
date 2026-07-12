@@ -2,6 +2,7 @@ import type { Exercise } from '../types/Exercise';
 import { exercises as dzien1Exercises } from './exercises';
 import { dzien2Exercises } from './exercises-dzien2';
 import { modulAiExercises } from './exercises-modul-ai';
+import { dzien3Exercises } from './exercises-dzien3';
 
 export interface Day {
   id: string;
@@ -41,9 +42,9 @@ export const days: Day[] = [
     title: 'Narzędzia i developer experience',
     titleEn: 'Tooling and developer experience',
     folder: 'dzien3-narzedzia',
-    locked: true,
+    locked: false,
     isLast: false,
-    exercises: [],
+    exercises: [...dzien3Exercises],
   },
   {
     id: 'dzien4',

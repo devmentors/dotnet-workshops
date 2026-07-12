@@ -1,0 +1,13 @@
+bin/
+obj/
+TestResults/
+*.db
+*.db-shm
+*.db-wal
+identifier.sqlite
+*.DotSettings.user
+.DS_Store
+.idea/
+.vs/
+*.nettrace
+dotnet_*.speedscope.json

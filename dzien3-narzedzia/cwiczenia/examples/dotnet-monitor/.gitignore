@@ -1,0 +1,8 @@
+# Artefakty diagnostyki generowane przez demo.sh / dotnet-monitor — nie commitujemy
+*.nettrace
+*.speedscope.json
+*.gcdump
+*.dump
+
+# Śmieci systemowe / IDE
+.DS_Store

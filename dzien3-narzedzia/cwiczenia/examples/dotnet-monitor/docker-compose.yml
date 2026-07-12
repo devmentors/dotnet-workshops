@@ -1,0 +1,36 @@
+name: dotnet-monitor-demo
+
+services:
+  # Aplikacja .NET, którą obserwujemy. Łączy się z monitorem po socketcie w /diag.
+  app:
+    build: ./MonitorTarget
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - DOTNET_DiagnosticPorts=/diag/port.sock,nosuspend
+    ports:
+      # host:kontener — host konfigurowalny (domyślnie 18080, z dala od zatłoczonego 8080).
+      #   Zajęty? APP_PORT=9080 docker compose up --build  (i APP=http://localhost:9080 ./demo.sh)
+      - "${APP_PORT:-18080}:8080"
+    volumes:
+      - diag:/diag
+    # demo: wspólny użytkownik dla socketu w /diag; NIE rób tego na produkcji
+    user: root
+
+  # dotnet-monitor jako SIDECAR: nasłuchuje na socketcie, REST API na :52323, metryki na :52325.
+  monitor:
+    image: mcr.microsoft.com/dotnet/monitor:10   # dopasuj tag do wersji .NET (np. :8 / :9 / :10)
+    command: ["collect", "--no-auth"]           # demo: bez uwierzytelniania
+    environment:
+      - DOTNETMONITOR_DiagnosticPort__ConnectionMode=Listen
+      - DOTNETMONITOR_DiagnosticPort__EndpointName=/diag/port.sock
+      - DOTNETMONITOR_Urls=http://+:52323
+      - DOTNETMONITOR_Metrics__Endpoints=http://+:52325
+    ports:
+      - "52323:52323"
+      - "52325:52325"
+    volumes:
+      - diag:/diag
+    user: root
+
+volumes:
+  diag:
