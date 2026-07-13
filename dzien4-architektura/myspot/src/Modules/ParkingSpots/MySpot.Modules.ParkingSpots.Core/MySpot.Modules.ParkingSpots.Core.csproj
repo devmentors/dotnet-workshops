@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Shared\MySpot.Shared.Infrastructure\MySpot.Shared.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\Availability\MySpot.Modules.Availability.Shared\MySpot.Modules.Availability.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

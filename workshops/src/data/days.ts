@@ -3,6 +3,7 @@ import { exercises as dzien1Exercises } from './exercises';
 import { dzien2Exercises } from './exercises-dzien2';
 import { modulAiExercises } from './exercises-modul-ai';
 import { dzien3Exercises } from './exercises-dzien3';
+import { dzien4Exercises } from './exercises-dzien4';
 
 export interface Day {
   id: string;
@@ -52,8 +53,8 @@ export const days: Day[] = [
     title: 'Architektura w projekcie .NET',
     titleEn: '.NET project architecture',
     folder: 'dzien4-architektura',
-    locked: true,
+    locked: false,
     isLast: true,
-    exercises: [],
+    exercises: [...dzien4Exercises],
   },
 ];

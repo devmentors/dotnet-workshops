@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="MySpot.Workshops.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MySpot.Modules.Availability.Core\MySpot.Modules.Availability.Core.csproj" />
+      <ProjectReference Include="..\MySpot.Modules.Availability.Shared\MySpot.Modules.Availability.Shared.csproj" />
+    </ItemGroup>
+
+</Project>
