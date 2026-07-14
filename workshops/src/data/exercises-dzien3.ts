@@ -497,15 +497,20 @@ The \`GET /orders-report\` endpoint (\`src/Shop/Program.cs\`) returns a correct 
     categoryPl: '05_TESTY: piszesz testy',
     timeMinutes: 9,
     descriptionPl: `
-## Po co to
+## Kontekst
 
-Dzień 3 odwraca Dzień 2: to TY piszesz testy. Najtańszy poziom to czysta logika sprawdzana wieloma danymi. \`[Theory]\` z wieloma \`[InlineData]\` to jeden test uruchamiany dla każdego zestawu - w raporcie widać dokładnie, który przypadek padł.
+Sprawdzasz \`OrderService.Place\` - serwis, który przyjmuje zamówienie i obciąża klienta. Reguła jest prosta: pobrana kwota = \`ilość × cena za sztukę\`. Czyli zamówienie na 2 sztuki po 50 zł ma obciążyć bramkę na **100 zł**, a 3 sztuki po 10 zł → **30 zł**. Osobno pilnujemy błędu: przy ilości \`0\` lub mniejszej \`Place\` rzuca \`ArgumentException\` i bramka nie jest wołana w ogóle.
+
+Serwis nie robi żadnej prawdziwej płatności - dostaje bramkę \`IPaymentGateway\` przez konstruktor. Żeby podejrzeć, jaką kwotę policzył, podstawiasz pod tę bramkę własną prostą atrapę, która zapamiętuje ostatnią pobraną kwotę. Potem porównujesz ją z tym, co wyliczyłeś ręcznie.
+
+To najprostszy rodzaj testu - czysta logika sprawdzana na wielu danych. Jeden \`[Theory]\` + kilka wierszy \`[InlineData(...)]\` to jeden test uruchamiany dla każdego wiersza, więc od razu widać, który przypadek się nie zgadza.
 
 ## Zadanie
 
-\`tests/Exercises.Tests/05_TESTY/stubs/PureLogicTheoryStub.cs\` startuje na CZERWONO przez \`Assert.Fail(...)\` - kontrakt brzmi "GREEN = napisałeś". Cel: reguła kwoty w \`OrderService.Place\` (\`amount == Quantity * UnitPrice\`). \`OrderService\` dostaje \`IPaymentGateway\` przez konstruktor, więc podstawiasz nagrywającego fake'a (spy), który zapamiętuje przekazaną kwotę.
+- \`[Theory]\` z kilkoma \`[InlineData]\` (min. 2) na regule kwoty, np. \`(2, 50, 100)\` i \`(3, 10, 30)\` - kolejno ilość, cena, oczekiwana kwota,
+- osobny \`[Fact]\`: \`Place\` z ilością \`0\` rzuca \`ArgumentException\`, a atrapa bramki pozostaje nietknięta.
 
-Usuń \`Assert.Fail\` i napisz: (a) \`[Theory]\`/\`[InlineData]\` na regule kwoty (min. 2 przypadki), (b) osobny \`[Fact]\`: \`Place\` z \`Quantity <= 0\` rzuca \`ArgumentException\` (bramka nieobciążona). Wzorzec parametryzacji masz w \`examples/ShippingTheoryExample.cs\`. Uruchom test w panelu, aż będzie ZIELONY.
+Wzór parametryzacji masz w \`examples/ShippingTheoryExample.cs\`.
     `,
     description: `
 ## Why it matters
@@ -565,15 +570,24 @@ public void non_positive_quantity_is_rejected_without_charge()
     categoryPl: '05_TESTY: piszesz testy',
     timeMinutes: 6,
     descriptionPl: `
-## Po co to
+## Kontekst
 
-Reguła progowa (rabat rośnie skokowo z ilością) to klasyczny materiał na \`[Theory]\`: prawdziwe ryzyko siedzi na GRANICACH przedziałów. Jeden test z kilkoma \`[InlineData]\` pokrywa wszystkie progi naraz.
+Sprawdzasz \`DiscountService.NetAfterDiscount(cena, ilość)\` - liczy kwotę do zapłaty po rabacie hurtowym. Rabat rośnie skokowo z ilością:
+- poniżej 10 sztuk: 0%,
+- od 10 sztuk: 5%,
+- od 20 sztuk: 10%.
+
+Policzmy na liczbach (cena 100 zł za sztukę):
+- 9 szt. → \`100 × 9 = 900\`, bez rabatu → **900**,
+- 10 szt. → \`100 × 10 = 1000\`, minus 5% → **950**,
+- 19 szt. → \`100 × 19 = 1900\`, wciąż 5% → **1805**,
+- 20 szt. → \`100 × 20 = 2000\`, minus 10% → **1800**.
+
+Zaokrąglenie jest "w górę od zera" (\`AwayFromZero\`). Błędy w takich regułach prawie zawsze siedzą dokładnie na granicach progów (9 vs 10, 19 vs 20), więc to idealny materiał na \`[Theory]\` - jeden test sprawdza wszystkie progi naraz.
 
 ## Zadanie
 
-\`tests/Exercises.Tests/05_TESTY/stubs/DiscountTheoryStub.cs\` startuje na CZERWONO przez \`Assert.Fail(...)\`. Subject: \`DiscountService.NetAfterDiscount(price, quantity)\` - 0% dla \`quantity < 10\`, 5% dla \`quantity >= 10\`, 10% dla \`quantity >= 20\`, zaokrąglenie \`AwayFromZero\`.
-
-Usuń \`Assert.Fail\` i napisz \`[Theory]\`/\`[InlineData]\` na granicach (min. 3 przypadki: np. \`qty 9\` = 0%, \`qty 10\` = 5%, \`qty 20\` = 10%). Wzór parametryzacji: \`examples/ShippingTheoryExample.cs\`. Uruchom test w panelu, aż będzie ZIELONY.
+Napisz \`[Theory]\` z \`[InlineData]\` na granicach progów (min. 3 przypadki, np. 9, 10 i 20 sztuk). Oczekiwane kwoty policz ręcznie jak wyżej. Wzór parametryzacji: \`examples/ShippingTheoryExample.cs\`.
     `,
     description: `
 ## Why it matters
@@ -616,18 +630,20 @@ public void napisz_theory_dla_rabatu_ilosciowego(decimal price, int quantity, de
     categoryPl: '05_TESTY: piszesz testy',
     timeMinutes: 6,
     descriptionPl: `
-## Po co to
+## Kontekst
 
-Czasem test nie sprawdza WYNIKU, lecz INTERAKCJĘ: czy zależność została wywołana, ile razy i z jakim argumentem. Do tego służy mock. NSubstitute daje \`Received(1)\` / \`DidNotReceive()\` zamiast ręcznego spy.
+Tu nie sprawdzasz WYNIKU funkcji, tylko to, czy coś się WYDARZYŁO - czyli jak \`OrderService.Place\` rozmawia z bramką płatności. \`Place\` po przyjęciu zamówienia woła \`IPaymentGateway.Charge(kwota)\`. Chcesz udowodnić dwie rzeczy:
+- po poprawnym zamówieniu (2 szt. po 50 zł) bramka jest obciążona DOKŁADNIE RAZ i kwotą 100 zł,
+- przy błędnej ilości (\`0\`) \`Place\` rzuca wyjątek, a bramka nie jest wołana ANI RAZU.
+
+W poprzednim zadaniu pisałeś atrapę ręcznie. Teraz to samo pytanie - "ile razy i z czym zawołano zależność" - zadaje za Ciebie biblioteka NSubstitute: \`gateway.Received(1).Charge(100m)\` znaczy "miało być raz, z setką", a \`gateway.DidNotReceive().Charge(...)\` - "nie wolno było wcale".
 
 ## Zadanie
 
-\`tests/Exercises.Tests/05_TESTY/stubs/MockVerifyStub.cs\` startuje na CZERWONO przez \`Assert.Fail(...)\`. Subject: \`OrderService.Place\` woła \`IPaymentGateway.Charge(amount)\`. Usuń \`Assert.Fail\` i napisz weryfikację interakcji:
+- \`[Fact]\`: po \`Place\` z 2 szt. po 50 zł sprawdź \`gateway.Received(1).Charge(100m)\`,
+- \`[Fact]\`: przy ilości \`0\` (\`Assert.Throws<ArgumentException>\`) sprawdź \`gateway.DidNotReceive().Charge(...)\`.
 
-- (a) po poprawnym zamówieniu bramka obciążona RAZ kwotą \`Quantity * UnitPrice\`: \`gateway.Received(1).Charge(100m)\`,
-- (b) przy \`Quantity <= 0\` (rzuca) bramka NIE ruszona: \`gateway.DidNotReceive().Charge(...)\`.
-
-Wzór: \`examples/MockingWithNSubstituteExample.cs\`. Uruchom test w panelu, aż będzie ZIELONY.
+Wzór masz w \`examples/MockingWithNSubstituteExample.cs\`.
     `,
     description: `
 ## Why it matters
@@ -691,18 +707,21 @@ public void does_not_charge_when_quantity_is_invalid()
     categoryPl: '05_TESTY: piszesz testy',
     timeMinutes: 10,
     descriptionPl: `
-## Po co to
+## Kontekst
 
-Test integracyjny podnosi całą aplikację w pamięci, z pełnym pipeline (routing, DI, wiązanie modelu) i odpytuje ją prawdziwym \`HttpClient\` bez otwierania portu. To wierniejsze niż unit, bo sprawdza realną ścieżkę żądania. Teraz piszesz taki test SAM.
+Test integracyjny podnosi całą aplikację w pamięci - z routingiem, wstrzykiwaniem zależności i wiązaniem danych z JSON - i odpytuje ją prawdziwym \`HttpClient\`, ale bez otwierania portu. Przechodzi tę samą drogę co realne żądanie, więc jest wierniejszy niż test jednostkowy.
+
+Sprawdzasz katalog produktów (\`POST /products\` i \`GET /products/{id}\`). Jak to działa:
+- \`POST /products\` z \`CreateProductRequest("Mysz", 79)\` tworzy produkt i zwraca **201** wraz z nadanym \`Id\`,
+- \`GET /products/{to Id}\` zwraca **200** i te same dane (nazwa "Mysz", cena 79),
+- \`GET /products/999999\` (Id, którego nie utworzyłeś) zwraca **404**.
 
 ## Zadanie
 
-\`tests/Exercises.Tests/05_TESTY/stubs/ProductEndpointStub.cs\` startuje na CZERWONO przez \`Assert.Fail(...)\`. Subject: katalog produktów (\`src/Shop/Catalog/ProductService.cs\`) wystawiony jako \`POST /products\` i \`GET /products/{id}\` w \`src/Shop/Program.cs\`. Usuń \`Assert.Fail\` i napisz:
+- happy path: \`POST\` produktu → 201, odczytaj \`Id\` z odpowiedzi, potem \`GET\` po tym \`Id\` → 200 z tą samą nazwą i ceną,
+- osobny \`[Fact]\`: \`GET\` nieistniejącego \`Id\` → 404.
 
-- (a) happy-path: \`POST /products\` z \`CreateProductRequest("Mysz", 79)\` -> 201, potem \`GET /products/{id}\` -> 200 z tymi samymi danymi,
-- (b) osobny \`[Fact]\`: \`GET /products/{brakujące id}\` -> 404 NotFound.
-
-Wzorzec (WAF, \`UseEnvironment("Testing")\`, \`HttpClient\`) masz w \`examples/CheckoutWafExample.cs\`. Uruchom test w panelu, aż będzie ZIELONY.
+Cały szkielet (WAF, \`UseEnvironment("Testing")\`, \`HttpClient\`) masz gotowy w \`examples/CheckoutWafExample.cs\`.
     `,
     description: `
 ## Why it matters
@@ -771,18 +790,22 @@ The pattern (WAF, \`UseEnvironment("Testing")\`, \`HttpClient\`) is in \`example
     categoryPl: '05_TESTY: piszesz testy',
     timeMinutes: 8,
     descriptionPl: `
-## Po co to
+## Kontekst
 
-Dobry test integracyjny sprawdza oba kontrakty endpointu naraz: happy-path i walidację błędnego wejścia. To ta sama technika WAF co we wzorcu \`CheckoutWafExample\`, ale tym razem piszesz go SAM, ćwicząc również ścieżkę błędu.
+Znów test integracyjny (WAF), ale tym razem sprawdzasz od razu oba zachowania endpointu \`POST /checkout\`: poprawne zamówienie i reakcję na błędne dane.
+
+Jak to działa:
+- poprawne \`OrderRequest("Book", 2, 50)\` → **200 OK**, a w ciele odpowiedzi \`Charged = true\` i \`Amount = 100\` (bo 2 × 50),
+- błędne \`OrderRequest("Book", 0, 50)\` (ilość ≤ 0) → **400 Bad Request**.
+
+To ta sama technika co we wzorcu \`CheckoutWafExample\`, dokładasz tylko ścieżkę błędu.
 
 ## Zadanie
 
-\`tests/Exercises.Tests/05_TESTY/stubs/CheckoutWafStub.cs\` startuje na CZERWONO przez \`Assert.Fail(...)\`. Subject: \`POST /checkout\` (\`src/Shop/Program.cs\`). Usuń \`Assert.Fail\` i napisz test integracyjny WAF (\`WebApplicationFactory<Program>\`, \`UseEnvironment("Testing")\`, \`HttpClient\`):
+- happy path: \`POST /checkout\` z 2 szt. po 50 → 200, sprawdź \`Charged\` i \`Amount == 100\`,
+- osobny \`[Fact]\`: ilość \`0\` → 400.
 
-- (a) happy-path: poprawne zamówienie \`OrderRequest("Book", 2, 50)\` -> 200 OK + body (\`Charged\`, \`Amount == 100\`),
-- (b) osobny \`[Fact]\`: błędny przypadek \`Quantity <= 0\` -> 400 BadRequest.
-
-Wzór: \`examples/CheckoutWafExample.cs\`. Uruchom test w panelu, aż będzie ZIELONY.
+Wzór: \`examples/CheckoutWafExample.cs\`.
     `,
     description: `
 ## Why it matters
@@ -850,15 +873,19 @@ Pattern: \`examples/CheckoutWafExample.cs\`. Run the test in the panel until GRE
     categoryPl: '05_TESTY: piszesz testy',
     timeMinutes: 10,
     descriptionPl: `
-## Po co to
+## Kontekst
 
-Dla ekipy z PHP (każdy request to świeży proces) i JS (jeden event loop) współbieżność na współdzielonym stanie to nowa bolączka. W ASP.NET Core żądania biegną na RÓŻNYCH wątkach RÓWNOLEGLE, więc zmienny stan w Singletonie musi być wątkowo-bezpieczny - inaczej aktualizacje giną. Warto zobaczyć to najpierw na żywo: DEMO uderza w \`/audit-log\` (osobna klasa \`AuditLog\`, nie ta z zadania) równoległym \`curl\`, a część zliczeń ginie.
+W ASP.NET Core żądania lecą RÓWNOLEGLE na RÓŻNYCH wątkach (inaczej niż w PHP, gdzie każde żądanie to świeży proces, czy w JS z jedną pętlą zdarzeń). Jeśli w Singletonie trzymasz zmienny stan bez zabezpieczenia, część aktualizacji ginie.
+
+Sprawdzasz \`VisitCounter\` (Singleton) z górnym limitem \`Max\`. \`TryIncrement()\` ma przyjąć odwiedziny (zwrócić \`true\` i dodać 1) tylko dopóki \`licznik < Max\`, a inaczej zwrócić \`false\` bez zmiany. Problem: to DWA kroki - najpierw SPRAWDZENIE \`licznik < Max\`, potem DODANIE - i nic nie pilnuje, żeby zrobiły się razem.
+
+Na czym polega błąd (weźmy \`Max = 3\`): dwa wątki w tej samej chwili widzą \`licznik = 2\` (czyli \`< 3\`, więc "wolno"), oba robią \`+1\` i licznik wskakuje na 4 - ponad limit. Jeden z odczytów przepadł.
+
+Test \`RaceOnSingletonTests\` wali w jedną instancję z wielu wątków naraz, z małym \`Max\` i dużo większą liczbą prób. Sprawdza trzy rzeczy jednocześnie: suma udanych przyjęć (\`true\`) == końcowy stan licznika, licznik nigdy nie przekracza \`Max\`, a przy takim natłoku przyjęć jest dokładnie \`Max\`.
 
 ## Zadanie
 
-Subject: \`VisitCounter\` (\`src/Shop/Counter/VisitCounter.cs\`), rejestrowany jako Singleton. Ma GÓRNY LIMIT \`Max\`: \`TryIncrement()\` przyjmuje odwiedziny (zwraca \`true\`, +1) TYLKO gdy \`_count < Max\`, inaczej \`false\` bez zmiany. To DWA kroki - SPRAWDZENIE limitu i INKREMENT - obecnie niesynchronizowane.
-
-Test \`RaceOnSingletonTests\` bije wielowątkowo przez \`Barrier\` po jednej instancji z małym \`Max\`, przy presji >> \`Max\`. Pilnuje inwariantu ZŁOŻONEGO: (a) liczba przyjęć == końcowy \`Count\`, (b) \`Count\` nigdy > \`Max\`, (c) przy presji >> \`Max\` przyjęć jest dokładnie \`Max\`. Uczyń check+inkrement NIEPODZIELNYM i uruchom test w panelu, aż będzie ZIELONY.
+Spraw, żeby SPRAWDZENIE limitu i DODANIE działy się jako jedna nierozerwalna całość - wtedy dwa wątki nie przecisną się naraz przez tę samą lukę. Podpowiedź: sekcja krytyczna (\`lock\` na prywatnym obiekcie) wokół obu kroków.
     `,
     description: `
 ## Why it matters
@@ -914,17 +941,23 @@ public bool TryIncrement()
     categoryPl: '05_TESTY: piszesz testy',
     timeMinutes: 20,
     descriptionPl: `
-## Po co to
+## Kontekst
 
-Endpoint \`/orders-report\` (\`src/Shop/Program.cs\`) woła usługę lojalnościową osobno dla każdego zamówienia - \`SimulatedLoyaltyApi.GetPointsAsync\` to 200 ms round-trip za każdym razem, także gdy ten sam klient powtarza się w raporcie. Cache-aside w Redisie odpowiada z pamięci podręcznej, a wolną usługę pyta tylko przy pudle (cache miss). Redis mieliście w Dniu 2 - teraz sami wpinacie go jako cache i **dowodzicie testem**, że działa.
+Endpoint \`/orders-report\` pyta usługę lojalnościową osobno dla każdego zamówienia, a każde takie pytanie (\`GetPointsAsync\`) to 200 ms w obie strony - nawet gdy ten sam klient powtarza się w raporcie kilka razy. Cache-aside w Redisie to naprawia: najpierw zaglądasz do pamięci podręcznej, a wolną usługę pytasz tylko wtedy, gdy w cache'u nic nie ma.
+
+Jak to działa krok po kroku dla \`GetPointsAsync(klient)\`:
+- pierwsze wywołanie: w Redisie pusto (miss) → pytasz wolne \`inner\`, dostajesz np. 420 punktów, zapisujesz do Redisa i zwracasz 420,
+- drugie wywołanie tego samego klienta: w Redisie już jest (hit) → zwracasz 420 prosto z pamięci, \`inner\` NIE jest w ogóle wołane.
+
+Czyli po dwóch wywołaniach dla tego samego klienta wolna usługa \`inner\` powinna dostać dokładnie jedno zapytanie - i to właśnie udowodnisz testem. Redis znasz z Dnia 2.
 
 ## Zadanie
 
-1. Zaimplementuj \`src/Shop/Loyalty/RedisPointsCache.cs\` - to dekorator \`ILoyaltyApi\` (cache-aside). W \`GetPointsAsync\`: sprawdź klucz w Redisie (\`IDatabase.StringGetAsync\`); przy trafieniu zwróć wartość z cache; przy pudle odpytaj \`inner\`, zapisz wynik (\`StringSetAsync\`) i zwróć. Domyślnie metoda rzuca \`NotImplementedException\` - to Twój RED.
+1. Zaimplementuj \`src/Shop/Loyalty/RedisPointsCache.cs\` - dekorator \`ILoyaltyApi\`. W \`GetPointsAsync\`: sprawdź klucz w Redisie (\`StringGetAsync\`); jest wartość → zwróć ją; nie ma → zapytaj \`inner\`, zapisz wynik (\`StringSetAsync\`) i zwróć.
 
-2. Napisz test \`tests/Exercises.Tests/05_TESTY/testcontainers/RedisPointsCacheTests.cs\` z prawdziwym Redisem w Testcontainers. Scaffolding kontenera skopiuj 1:1 z \`PostgresParityTests\` (gotowy wzorzec: \`IAsyncLifetime\` + \`StartAsync\`/\`DisposeAsync\` + \`GetConnectionString\`) — podmień tylko \`PostgreSqlBuilder\` na \`RedisBuilder().Build()\` i połącz \`ConnectionMultiplexer.Connect(container.GetConnectionString())\`, podstaw pod \`inner\` atrapę (\`Substitute.For<ILoyaltyApi>()\`) i udowodnij, że dwa wywołania \`GetPointsAsync\` dla tego samego klienta uderzają w \`inner\` tylko raz - drugie idzie z Redisa.
+2. Napisz test \`testcontainers/RedisPointsCacheTests.cs\` z prawdziwym Redisem przez Testcontainers. Szkielet kontenera skopiuj żywcem z \`PostgresParityTests\` (\`IAsyncLifetime\` + \`StartAsync\`/\`DisposeAsync\` + \`GetConnectionString\`) — podmień tylko \`PostgreSqlBuilder\` na \`RedisBuilder().Build()\` i połącz się przez \`ConnectionMultiplexer.Connect(...)\`. Pod \`inner\` podstaw atrapę \`Substitute.For<ILoyaltyApi>()\`, wywołaj \`GetPointsAsync\` dwa razy dla tego samego klienta i udowodnij \`inner.Received(1)\` - drugie wywołanie poszło z Redisa.
 
-Żeby uruchomić: miej włączony Docker, usuń argument \`Skip\` z atrybutu i odpal \`dotnet test\` w terminalu.
+Żeby uruchomić: włącz Dockera, zdejmij \`Skip\` z atrybutu i odpal \`dotnet test\`.
     `,
     description: `
 ## Why it matters
