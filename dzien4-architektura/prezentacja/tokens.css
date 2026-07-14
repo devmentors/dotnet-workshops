@@ -1,0 +1,125 @@
+/* =========================================================
+   DevMentors Slides · C#/.NET training · design tokens
+   Brand palette:
+   teal #48BDB8 lead, .NET purple #512BD4, teal-navy gradient bg,
+   League Spartan / Roboto / JetBrains Mono.
+   Element-level brand rules (heading font, gradient bg, code slide)
+   live in the BRAND block at the END of slides.css.
+   ========================================================= */
+
+.reveal {
+  /* ------ surfaces ------ */
+  --canvas:           #05070A;     /* page ground (gradient applied in slides.css) */
+  --bg-top:           #05070A;
+  --bg-bottom:        #0A1F2E;
+  --surface-1:        #0E2430;     /* default cards / pill-bg */
+  --surface-2:        #12303C;     /* lifted cards, code blocks */
+  --surface-elev:     #163A44;     /* hovered, modal */
+
+  /* ------ hairlines ------ */
+  --hairline-soft:    #142A33;
+  --hairline:         #1C3A45;     /* brand --line */
+  --hairline-strong:  #244A57;
+
+  /* ------ text ------ */
+  --ink:              #EDF2F2;
+  --ink-secondary:    #C9D6D6;
+  --ink-mute:         #8FA3A8;     /* brand --ink-dim */
+  --ink-faint:        #5A6E73;
+
+  /* ------ brand · teal lead (scarce, signal-only) ------ */
+  --teal:             #48BDB8;     /* KOLOR WIODĄCY (web brand) */
+  --teal-soft:        #6FE9E3;     /* highlight słów kluczowych */
+  --teal-deep:        #2EA09B;
+  --teal-glow:        rgba(72, 189, 184, 0.14);
+
+  /* ------ .NET marker · purple (tylko sekcja 0 / zoom do C#) ------ */
+  --purple:           #512BD4;
+  --purple-lt:        #9D7BFF;
+
+  /* ------ stany ------ */
+  --green:            #19E07A;     /* GREEN / sukces / test pass */
+  --red:              #FF4D5E;     /* RED / pułapka / błąd */
+  --amber:            #FFB23E;     /* ostrzeżenia kompilatora, uwaga */
+
+  /* ------ taxonomy domain colors (chips/pills only, never fills) ------ */
+  --indigo:           #6B8DD6;     /* architecture */
+  --sage:             #19E07A;     /* data → brand green */
+  --coral-domain:     #FF4D5E;     /* security → brand red */
+  --violet:           #9D7BFF;     /* devops → brand purple-lt */
+
+  /* ------ warm · single emotional moment per deck ------ */
+  --coral:            #FF4D5E;     /* brand red */
+  --coral-deep:       #C2384A;
+  --atmos-coral:      linear-gradient(135deg, #FF4D5E 0%, #C2384A 100%);
+
+  /* ------ atmospheric panels ------ */
+  --atmos-violet:     linear-gradient(135deg, #512BD4 0%, #9D7BFF 100%);
+  --atmos-teal:       linear-gradient(135deg, #48BDB8 0%, #0A1F2E 100%);
+
+  /* ------ font pair (brand) ------ */
+  --font-display: 'League Spartan', system-ui, sans-serif;  /* nagłówki, wersaliki */
+  --font-sans: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif; /* proza */
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Monaco, Consolas, monospace; /* kod */
+
+  /* ------ radii ------ */
+  --radius-xs:    4px;
+  --radius-sm:    6px;
+  --radius-md:    8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  24px;
+  --radius-pill: 9999px;
+
+  /* ------ spacing (4px base) ------ */
+  --sp-1:   4px;
+  --sp-2:   8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-24: 96px;
+  --sp-30: 120px;
+
+  /* ------ slide canvas + content frame ------ */
+  --canvas-w:  1920px;
+  --canvas-h:  1080px;
+  --gutter:     80px;
+  --frame-x:   120px;
+  --frame-y-top:    160px;
+  --frame-y-bottom: 80px;
+
+  /* ------ motion ------ */
+  --ease:           cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast:  160ms;
+  --duration-base:  320ms;
+  --stagger:         80ms;
+
+  /* ------ elevation ------ */
+  --elev-1:  0 1px 3px rgba(0, 0, 0, 0.4);
+  --elev-2:  0 8px 24px rgba(0, 0, 0, 0.5);
+  --elev-3:  0 16px 48px rgba(72, 189, 184, 0.10);   /* teal-tinted */
+  --elev-4:  0 24px 96px rgba(81, 43, 212, 0.20);    /* purple-tinted, panels */
+  --elev-coral: 0 24px 96px rgba(255, 77, 94, 0.20);
+}
+
+/* Forced-colors mode (Windows high contrast) — preserve readability */
+@media (forced-colors: active) {
+  .reveal {
+    --canvas: Canvas;
+    --ink: CanvasText;
+    --teal: LinkText;
+  }
+}
+
+/* Reduced motion — kill animations, keep transitions instant */
+@media (prefers-reduced-motion: reduce) {
+  .reveal *, .reveal *::before, .reveal *::after {
+    animation-duration: 0ms !important;
+    transition-duration: 0ms !important;
+  }
+}

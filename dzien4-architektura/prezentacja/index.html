@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architektura: modularny monolit na MySpot - Dzień 4 · DevMentors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;700;800&family=Roboto:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- Reveal.js core (vendored, offline-friendly) -->
+<link rel="stylesheet" href="vendor/reveal.js/reset.css">
+<link rel="stylesheet" href="vendor/reveal.js/reveal.css">
+
+<!-- DevMentors slide kit -->
+<link rel="stylesheet" href="tokens.css?v=1">
+<link rel="stylesheet" href="slides.css?v=1">
+</head>
+<body>
+
+<div class="reveal">
+  <div class="slides">
+
+    <!-- ============ 01 · TYTUŁ DNIA ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="eyebrow">GetResponse × DevMentors</div>
+        <div class="center-block">
+          <div style="display:flex; align-items:center; justify-content:flex-start; gap:44px;">
+            <div class="badge net sm">.NET</div>
+            <div>
+              <h1 class="title" style="font-size:78px; line-height:.98;"><span style="color:var(--teal);">ARCHITEKTURA</span><br>W PROJEKCIE .NET</h1>
+              <div style="margin-top:26px;"><span class="bar">Dzień 4 z 4</span></div>
+              <div style="margin-top:22px; font-size:23px; color:var(--ink-dim); max-width:760px;">Czyli jak to, czego nauczyliście się przez trzy dni, wygląda w realnej aplikacji.</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-family:var(--font-head); font-weight:700; font-size:20px; color:var(--ink); letter-spacing:1px;">DARIUSZ PAWLUKIEWICZ</div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">01</span> / 43 }</div>
+      <aside class="notes">Trzy dni budowaliśmy klocki: język, ASP.NET Core, narzędzia. Dziś otwieramy gotowy, realny projekt i patrzymy, jak te klocki pracują razem. Wszystko, co dziś zobaczycie, już znacie w częściach.</aside>
+    </section>
+
+    <!-- ============ 02 · WHO AM I ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="row" style="flex:1; align-items:center; gap:60px;">
+          <div style="flex:0 0 300px; display:flex; flex-direction:column; align-items:center;">
+            <div style="width:280px; height:300px; border-radius:18px; overflow:hidden;
+              background:linear-gradient(150deg, #163a44 0%, #0A1F2E 100%); border:1px solid var(--line);
+              display:flex; align-items:center; justify-content:center; position:relative;">
+              <span style="font-family:var(--font-head); font-weight:800; font-size:110px; color:rgba(72,189,184,.35);">DP</span>
+              <span style="position:absolute; bottom:0; left:0; right:0; background:var(--teal); color:#04141a;
+                font-family:var(--font-head); font-weight:700; font-size:21px; text-align:center; padding:9px 0; letter-spacing:.5px;">
+                Dariusz Pawlukiewicz</span>
+            </div>
+          </div>
+          <div class="grow">
+            <h3 class="head" style="font-size:88px; margin-bottom:30px;">WHO AM I</h3>
+            <ul class="list" style="gap:16px;">
+              <li><b>DevMentors</b></li>
+              <li>praktyk .NET na produkcji</li>
+              <li>architektura i ekosystem</li>
+            </ul>
+          </div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">02</span> / 43 }</div>
+      <aside class="notes">Krótkie przypomnienie, kto prowadzi. Dzień czwarty, więc bez rozwlekania.</aside>
+    </section>
+
+    <!-- ============ 03 · PLAN DNIA ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <h3 class="head" style="margin-bottom:20px;">PLAN <span class="ac">DNIA</span></h3>
+        <div style="font-family:var(--font-mono); font-size:14px; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-dim); margin-bottom:20px;">Jedna aplikacja: MySpot. Przechodzimy przez nią od struktury po komunikację i odporność.</div>
+        <div class="vc" style="justify-content:flex-start;">
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div class="day"><span class="dnum" style="min-width:44px; color:var(--teal);">1</span><span class="dname" style="font-size:19px;">MySpot i modularny monolit</span></div>
+            <div class="day"><span class="dnum" style="min-width:44px; color:var(--teal);">2</span><span class="dname" style="font-size:19px;">Bootstrapper</span></div>
+            <div class="day"><span class="dnum" style="min-width:44px; color:var(--teal);">3</span><span class="dname" style="font-size:19px;">Moduł CRUD</span></div>
+            <div class="day"><span class="dnum" style="min-width:44px; color:var(--teal);">4</span><span class="dname" style="font-size:19px;">Clean Architecture i CQRS</span></div>
+            <div class="day"><span class="dnum" style="min-width:44px; color:var(--teal);">5</span><span class="dname" style="font-size:19px;">Komunikacja synchroniczna</span></div>
+            <div class="day"><span class="dnum" style="min-width:44px; color:var(--teal);">6</span><span class="dname" style="font-size:19px;">Komunikacja asynchroniczna</span></div>
+            <div class="day"><span class="dnum" style="min-width:44px; color:var(--teal);">7</span><span class="dname" style="font-size:19px;">Zewnętrzne zależności i odporność</span></div>
+            <div class="day"><span class="dnum" style="min-width:44px; color:var(--teal);">8</span><span class="dname" style="font-size:19px;">Observability</span></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">03</span> / 43 }</div>
+      <aside class="notes">Oś dnia to jedna aplikacja oglądana coraz głębiej: najpierw z lotu ptaka, potem jak startuje, potem moduł prosty i moduł dojrzały, na końcu jak moduły ze sobą rozmawiają i co się dzieje, gdy coś zawodzi.</aside>
+    </section>
+
+    <!-- ============ 04 · DYWIDER S1 ============ -->
+    <section class="slide-divider variant-atmospheric">
+      <div class="stack">
+        <div class="num">SEKCJA 1</div>
+        <h2 style="font-size:78px; letter-spacing:-2px;">MYSPOT I <span class="grad">MODULARNY</span> MONOLIT</h2>
+        <div class="lead">Poznajemy domenę i architekturę, w której będziemy się dziś poruszać.</div>
+      </div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">04</span> / 43 }</div>
+      <aside class="notes">Zanim wejdziemy w kod, dwie rzeczy: co ta aplikacja robi biznesowo i jak jest pokrojona.</aside>
+    </section>
+
+    <!-- ============ 05 · KONCEPT · DOMENA MYSPOT ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 1 · MySpot i modularny monolit</div>
+        <h3 class="head" style="font-size:42px; margin-bottom:10px;">MYSPOT: REZERWACJA MIEJSC <span class="ac">PARKINGOWYCH</span></h3>
+        <div class="concept" style="margin-top:4px; gap:48px;">
+          <div class="gfx" style="flex:0 0 220px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:190px; height:190px; color:var(--teal);"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg>
+            <div class="src-cap">wewnętrzna apka pracownicza</div>
+          </div>
+          <div class="body">
+            <div class="prose" style="font-size:21px; max-width:760px; margin-bottom:18px;">Wewnętrzna aplikacja dla <span class="gk">pracowników firmy</span>: każdy rezerwuje miejsce w garażu na konkretny dzień, a system pilnuje <span class="gk">reguł biznesowych</span>.</div>
+            <ul class="pts" style="max-width:760px;">
+              <li>Rezerwacje planowane <span class="gk">tygodniowo</span>: na bieżący tydzień pracy.</li>
+              <li>Limit rezerwacji zależy od stanowiska (<span class="gk">JobTitle</span>): Boss, Manager i Regular mają różne uprawnienia.</li>
+              <li>Na jednym miejscu parkuje <span class="gk">1 samochód albo 2 motocykle</span>.</li>
+              <li><span class="gk">Sprzątanie garażu</span> wymaga pustych miejsc: rezerwacje na ten dzień są zdejmowane.</li>
+              <li>Za złe parkowanie grozi <span class="gk">tymczasowy zakaz</span> rezerwacji.</li>
+            </ul>
+            <div class="box" style="margin-top:26px; max-width:760px;">🔑 Prosta domena z realnymi regułami: dzięki temu moduły mają <span class="gk">różną złożoność</span> i różne style.</div>
+          </div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">05</span> / 43 }</div>
+      <aside class="notes">Domena celowo prosta do opowiedzenia, ale reguły są prawdziwe: limity, priorytety, kolizje. To da nam moduły o różnej wadze i to jest sedno dzisiejszego dnia.</aside>
+    </section>
+
+    <!-- ============ 06 · DIAGRAM TEORETYCZNY MM ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 1 · MySpot i modularny monolit</div>
+        <h3 class="head" style="font-size:38px; margin-bottom:6px;">MODULARNY MONOLIT: GRANICE WEWNĄTRZ JEDNEJ <span class="ac">APLIKACJI</span></h3>
+        <div class="vc">
+          <div class="mm">
+            <div class="mm-tag">jedna aplikacja, jedno wdrożenie</div>
+            <div class="mm-anns">
+              <div class="mm-ann">każdy moduł to osobny pionowy wycinek:<br>od API po dane ↓</div>
+              <div class="mm-ann">rozmowa tylko przez publiczne API modułu ↓</div>
+            </div>
+            <div class="mm-row">
+              <div class="mm-mod">
+                <div class="mm-api"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></svg>publiczne API</div>
+                <div class="mm-logic"><span class="mn">Moduł A</span><span class="ml">logika i reguły</span></div>
+                <div class="mm-db"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>własna baza / schemat</div>
+              </div>
+              <div class="mm-arr">⟷</div>
+              <div class="mm-mod">
+                <div class="mm-api"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></svg>publiczne API</div>
+                <div class="mm-logic"><span class="mn">Moduł B</span><span class="ml">logika i reguły</span></div>
+                <div class="mm-db"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>własna baza / schemat</div>
+              </div>
+              <div class="mm-arr">⟷</div>
+              <div class="mm-mod">
+                <div class="mm-api"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/></svg>publiczne API</div>
+                <div class="mm-logic"><span class="mn">Moduł C</span><span class="ml">logika i reguły</span></div>
+                <div class="mm-db"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>własna baza / schemat</div>
+              </div>
+            </div>
+            <div class="mm-ann-db"><span class="mm-ann">↑ dane prywatne dla modułu: nikt nie sięga do cudzej bazy</span></div>
+          </div>
+          <div class="box" style="margin-top:22px;">🔑 Granice pilnowane <span class="gk">jak w systemie rozproszonym</span>, ale wszystko działa w jednym procesie.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">06</span> / 43 }</div>
+      <aside class="notes">Definicji nie trzeba recytować, więc od razu obraz: pionowe wycinki, prywatne dane, komunikacja tylko przez zdefiniowane API. Cała reszta dnia to pokazanie, jak te trzy zasady wyglądają w kodzie.</aside>
+    </section>
+
+    <!-- ============ 07 · THE DIAGRAM MYSPOT ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 1 · MySpot i modularny monolit</div>
+        <h3 class="head" style="font-size:42px; margin-bottom:16px;">JAK TO WYGLĄDA W <span class="ac">MYSPOCIE</span></h3>
+        <div class="vc">
+          <div class="arch" style="gap:8px;">
+            <div class="arch-boot">Bootstrapper<small>jedna aplikacja ASP.NET Core · composition root</small></div>
+            <div class="arch2-arrows"><span>↓</span><span>↓</span><span>↓</span><span>↓</span><span>↓</span><span>↓</span></div>
+            <div class="arch-mods2">
+              <div class="amod2"><div class="an">Availability</div><div class="apr"><span>Api</span><span>Application</span><span>Core</span><span>Infrastructure</span><span>Shared</span></div><div class="ast ca">Clean Architecture</div></div>
+              <div class="amod2"><div class="an">Reservations</div><div class="apr"><span>Api</span><span>Application</span><span>Core</span><span>Infrastructure</span></div><div class="ast ca">Clean Architecture</div></div>
+              <div class="amod2"><div class="an">Users</div><div class="apr"><span>Api</span><span>Core</span></div><div class="ast cp">Command Pattern</div></div>
+              <div class="amod2"><div class="an">ParkingSpots</div><div class="apr"><span>Api</span><span>Core</span></div><div class="ast">CRUD</div></div>
+              <div class="amod2"><div class="an">Notifications</div><div class="apr"><span>Api</span></div><div class="ast">CRUD</div></div>
+              <div class="amod2"><div class="an">Mapping</div><div class="apr"><span>Api</span></div><div class="ast">tłumacz eventów</div></div>
+            </div>
+            <div class="arch-shared" style="margin-top:4px;">
+              <div class="ashared">Shared.Abstractions <span style="color:var(--ink-dim); font-size:13px;">· wspólne kontrakty</span></div>
+              <div class="ashared">Shared.Infrastructure <span style="color:var(--ink-dim); font-size:13px;">· wspólny silnik</span></div>
+            </div>
+          </div>
+          <div class="box" style="margin-top:20px;">🔑 Jedna aplikacja ASP.NET Core na górze, <span class="gk">autonomiczne moduły</span> pod spodem, wspólny fundament na dole.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">07</span> / 43 }</div>
+      <aside class="notes">To jest THE diagram, wracamy do niego cały dzień. Moduły mają różną liczbę projektów i różne style, bo mają różnie złożone domeny. Nikt tu nie robi Clean Architecture „bo wypada".</aside>
+    </section>
+
+    <!-- ============ 08 · KARTY MODUŁÓW ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 1 · MySpot i modularny monolit</div>
+        <h3 class="head" style="font-size:42px; margin-bottom:18px;">MODUŁY MYSPOTA: ZA CO <span class="ac">ODPOWIADA</span> KAŻDY</h3>
+        <div class="vc">
+          <div class="modgrid">
+            <div class="mcard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v17a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H3"/><path d="m16 19 2 2 4-4"/></svg><div class="mt">Availability</div><div class="md">Zarządza zasobami i ich dostępnością w czasie.</div><div class="ms">Clean Architecture</div></div>
+            <div class="mcard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg><div class="mt">Reservations</div><div class="md">Przyjmuje rezerwacje i egzekwuje polityki wg stanowiska.</div><div class="ms">Clean Architecture</div></div>
+            <div class="mcard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><div class="mt">Users</div><div class="md">Rejestracja i logowanie pracowników.</div><div class="ms">Command Pattern</div></div>
+            <div class="mcard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg><div class="mt">ParkingSpots</div><div class="md">Ewidencja miejsc parkingowych.</div><div class="ms">CRUD</div></div>
+            <div class="mcard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><div class="mt">Notifications</div><div class="md">Wysyła e-maile przez zewnętrzne API.</div><div class="ms">CRUD</div></div>
+            <div class="mcard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg><div class="mt">Mapping</div><div class="md">Tłumaczy zdarzenia jednego modułu na język drugiego.</div><div class="ms">tłumacz eventów</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">08</span> / 43 }</div>
+      <aside class="notes">Sześć modułów, sześć odpowiedzialności. Availability i Reservations niosą reguły biznesowe, więc dostały pełną architekturę. ParkingSpots i Notifications to proste operacje, więc dostały prosty kod. Do każdego dziś zajrzymy.</aside>
+    </section>
+
+    <!-- ============ 09 · DYWIDER S2 ============ -->
+    <section class="slide-divider variant-atmospheric">
+      <div class="stack">
+        <div class="num">SEKCJA 2</div>
+        <h2><span class="grad">BOOTSTRAPPER</span></h2>
+        <div class="lead">Jedno miejsce, które składa wszystkie moduły w działającą aplikację.</div>
+      </div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">09</span> / 43 }</div>
+      <aside class="notes">Skoro moduły są autonomiczne, ktoś musi je zebrać i uruchomić. Wchodzimy do hosta.</aside>
+    </section>
+
+    <!-- ============ 10 · KOD · PROGRAM.CS ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 2 · Bootstrapper</div>
+        <h3 class="head" style="font-size:40px; margin-bottom:16px;"><span class="ac">JEDNA</span> APLIKACJA, JEDNA JEDNOSTKA WDROŻENIOWA</h3>
+        <div class="vc">
+          <div class="row" style="gap:22px; align-items:stretch;">
+            <div style="flex:1.5; min-width:0;">
+<pre class="code" style="font-size:12px; line-height:1.45; margin:0;"><span style="color:var(--purple-lt)">var</span> builder = <span style="color:#82AAFF">WebApplication</span>.<span style="color:#82AAFF">CreateBuilder</span>(args);
+builder.Host.<span style="color:#82AAFF">ConfigureModules</span>().<span style="color:#82AAFF">UseLogging</span>();
+
+<span style="color:var(--ink-dim)">// refleksja: host odnajduje moduły w DLL-kach (o tym za chwilę)</span>
+<span style="color:var(--purple-lt)">var</span> assemblies = <span style="color:#82AAFF">ModuleLoader</span>.<span style="color:var(--teal-bright)">LoadAssemblies</span>(builder.Configuration, <span style="color:#C3E88D">"MySpot.Modules."</span>);
+<span style="color:var(--purple-lt)">var</span> modules = <span style="color:#82AAFF">ModuleLoader</span>.<span style="color:var(--teal-bright)">LoadModules</span>(assemblies);
+
+builder.Services.<span style="color:#82AAFF">AddModularInfrastructure</span>(builder.Configuration, assemblies, modules);
+<span style="color:var(--purple-lt)">foreach</span> (<span style="color:var(--purple-lt)">var</span> module <span style="color:var(--purple-lt)">in</span> modules)
+    module.<span style="color:var(--teal-bright)">Register</span>(builder.Services, builder.Configuration); <span style="color:var(--ink-dim)">// usługi do DI</span>
+
+<span style="color:var(--purple-lt)">var</span> app = builder.<span style="color:#82AAFF">Build</span>();
+app.<span style="color:#82AAFF">UseModularInfrastructure</span>();
+<span style="color:var(--purple-lt)">foreach</span> (<span style="color:var(--purple-lt)">var</span> module <span style="color:var(--purple-lt)">in</span> modules)
+    module.<span style="color:var(--teal-bright)">Use</span>(app);    <span style="color:var(--ink-dim)">// middleware modułu do pipeline'u</span>
+
+<span style="color:var(--purple-lt)">foreach</span> (<span style="color:var(--purple-lt)">var</span> module <span style="color:var(--purple-lt)">in</span> modules)
+    module.<span style="color:var(--teal-bright)">Expose</span>(app); <span style="color:var(--ink-dim)">// endpointy modułu</span>
+
+app.<span style="color:#82AAFF">Run</span>();</pre>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; gap:12px; justify-content:center;">
+              <div class="rcard"><span class="chip"><b>DZIEŃ 2</b>&nbsp;· DI</span><div class="rd">Rejestruje usługi wszystkich modułów w jednym kontenerze DI.</div></div>
+              <div class="rcard"><span class="chip"><b>DZIEŃ 2</b>&nbsp;· MIDDLEWARE</span><div class="rd">Składa jeden pipeline middleware dla całej aplikacji.</div></div>
+              <div class="rcard"><span class="chip"><b>DZIEŃ 2</b>&nbsp;· COMPOSITION ROOT</span><div class="rd">Jest composition root: jedyne miejsce, które zna wszystkie moduły.</div></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">10</span> / 43 }</div>
+      <aside class="notes">Pamiętacie Program.cs z Dnia 2? To jest dokładnie ten sam plik, tylko zamiast rejestrować usługi wprost, host oddaje głos każdemu modułowi: Register, Use, Expose. Jedyna nowa rzecz to dwie linie ModuleLoader, i o nich zaraz. Na końcu sekcji zadanie Z1: IModule.</aside>
+    </section>
+
+    <!-- ============ 11 · KONCEPT NOWOŚĆ · REFLEKSJA ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 2 · Bootstrapper</div>
+        <div class="concept" style="gap:52px;">
+          <div class="gfx" style="flex:0 0 330px;">
+            <div class="refl">
+              <div class="rf">
+                <div class="rl">kod</div>
+                <div class="cl"></div><div class="cl s"></div><div class="cl"></div><div class="cl s"></div>
+              </div>
+              <div class="ra">→</div>
+              <div class="rf">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><path d="m16 16-1.9-1.9"/></svg>
+                <div class="cl"></div><div class="cl s"></div>
+                <div class="rl">kod czytający kod</div>
+              </div>
+            </div>
+            <div class="src-cap">typy jako dane w runtime</div>
+          </div>
+          <div class="body">
+            <h3 class="head" style="font-size:46px; margin-bottom:8px;">CZYM JEST <span class="ac">REFLEKSJA</span></h3>
+            <div style="margin-bottom:18px;"><span class="chip chip-new"><b>NOWOŚĆ</b>&nbsp;· REFLEKSJA</span></div>
+            <div class="prose" style="font-size:21px; max-width:720px;">Refleksja to mechanizm, dzięki któremu program ogląda <span class="gk">własne typy w trakcie działania</span>. Klasa, metoda czy interfejs to w .NET obiekty (<span class="gk" style="font-family:var(--font-mono);">Type</span>), które można <span class="gk">wyliczyć</span>, <span class="gk">przefiltrować</span> i utworzyć z nich <span class="gk">instancje bez new</span> zapisanego w kodzie.</div>
+<pre class="code" style="font-size:12.5px; line-height:1.5; margin:18px 0 0; max-width:720px;"><span style="color:#82AAFF">Type</span> type = <span style="color:var(--purple-lt)">typeof</span>(<span style="color:#82AAFF">AvailabilityModule</span>);           <span style="color:var(--ink-dim)">// typ jako obiekt</span>
+<span style="color:#82AAFF">Type</span>[] types = assembly.<span style="color:var(--teal-bright)">GetTypes</span>();               <span style="color:var(--ink-dim)">// wszystkie typy z DLL-ki</span>
+<span style="color:var(--purple-lt)">object</span> instance = <span style="color:#82AAFF">Activator</span>.<span style="color:var(--teal-bright)">CreateInstance</span>(type); <span style="color:var(--ink-dim)">// instancja bez new</span></pre>
+            <div class="box" style="margin-top:20px; max-width:720px;">🔑 Kod, który czyta kod. Dzięki temu host znajdzie moduły, <span class="gk">których nie zna z nazwy</span>.</div>
+          </div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">11</span> / 43 }</div>
+      <aside class="notes">Jedyna prawdziwa nowość dzisiejszego dnia. Do tej pory typy znaliście w czasie kompilacji; refleksja pozwala pracować na nich w runtime, jak na zwykłych danych. Zaraz zobaczycie, po co to modularnemu monolitowi.</aside>
+    </section>
+
+    <!-- ============ 12 · KOD · MODULELOADER ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 2 · Bootstrapper</div>
+        <h3 class="head" style="font-size:42px; margin-bottom:20px;"><span class="ac">MODULELOADER</span>: REFLEKSJA W AKCJI</h3>
+        <div class="vc">
+          <div class="codewrap mt">
+            <div class="chiprow"><span class="chip chip-new"><b>NOWOŚĆ</b>&nbsp;· REFLEKSJA</span></div>
+<pre class="code" style="font-size:14px; line-height:1.6; margin:0;"><span style="color:var(--purple-lt)">public static</span> <span style="color:#82AAFF">IList</span>&lt;<span style="color:#82AAFF">IModule</span>&gt; <span style="color:#82AAFF">LoadModules</span>(<span style="color:#82AAFF">IEnumerable</span>&lt;<span style="color:#82AAFF">Assembly</span>&gt; assemblies)
+    =&gt; assemblies
+        .<span style="color:#82AAFF">SelectMany</span>(x =&gt; x.<span style="color:var(--teal-bright)">GetTypes</span>())                                     <span style="color:var(--ink-dim)">// wylicz wszystkie typy</span>
+        .<span style="color:#82AAFF">Where</span>(x =&gt; <span style="color:var(--purple-lt)">typeof</span>(<span style="color:#82AAFF">IModule</span>).<span style="color:var(--teal-bright)">IsAssignableFrom</span>(x) &amp;&amp; !x.IsInterface) <span style="color:var(--ink-dim)">// przefiltruj po interfejsie</span>
+        .<span style="color:#82AAFF">OrderBy</span>(x =&gt; x.Name)
+        .<span style="color:#82AAFF">Select</span>(<span style="color:#82AAFF">Activator</span>.<span style="color:var(--teal-bright)">CreateInstance</span>)                                  <span style="color:var(--ink-dim)">// utwórz instancje bez new</span>
+        .<span style="color:#82AAFF">Cast</span>&lt;<span style="color:#82AAFF">IModule</span>&gt;()
+        .<span style="color:#82AAFF">ToList</span>();</pre>
+          </div>
+          <div class="box" style="margin-top:26px;">🔑 Dokładnie ten mechanizm ze slajdu obok: <span class="gk">wyliczamy typy</span>, <span class="gk">filtrujemy po interfejsie</span>, <span class="gk">tworzymy instancje</span>.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">12</span> / 43 }</div>
+      <aside class="notes">Siedem linii, a to one czynią monolit modularnym: host nie ma w kodzie referencji do żadnego modułu z nazwy. Nowy moduł wystarczy dodać do solucji, loader sam go znajdzie. LINQ z Dnia 1 plus refleksja sprzed chwili.</aside>
+    </section>
+
+    <!-- ============ 13 · KOD · KONFIGURACJA MODUŁÓW ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 2 · Bootstrapper</div>
+        <h3 class="head" style="font-size:42px; margin-bottom:20px;">MODUŁY STEROWANE <span class="ac">KONFIGURACJĄ</span></h3>
+        <div class="vc">
+          <div class="row" style="gap:22px; align-items:stretch;">
+            <div class="codewrap mt" style="flex:0 0 340px; display:flex; flex-direction:column;">
+              <div class="chiprow"><span class="chip"><b>DZIEŃ 2</b>&nbsp;· KONFIGURACJA</span></div>
+<pre class="code" style="font-size:13px; line-height:1.6; margin:0; flex:1;"><span style="color:var(--ink-dim)">// module.availability.json</span>
+{
+  <span style="color:#82AAFF">"availability"</span>: {
+    <span style="color:#82AAFF">"module"</span>: {
+      <span style="color:#82AAFF">"name"</span>: <span style="color:#C3E88D">"Availability"</span>,
+      <span style="color:var(--teal-bright)">"enabled"</span>: <span style="color:#F78C6C">true</span>
+    }
+  }
+}</pre>
+            </div>
+            <div class="codewrap mt" style="flex:1; min-width:0; display:flex; flex-direction:column;">
+<pre class="code" style="font-size:13px; line-height:1.6; margin:0; flex:1;"><span style="color:var(--ink-dim)">// ModuleLoader.LoadAssemblies: nazwa modułu wyciągnięta z nazwy pliku DLL</span>
+<span style="color:var(--purple-lt)">var</span> moduleName = file.<span style="color:#82AAFF">Split</span>(modulePart)[<span style="color:#F78C6C">1</span>].<span style="color:#82AAFF">Split</span>(<span style="color:#C3E88D">"."</span>)[<span style="color:#F78C6C">0</span>].<span style="color:#82AAFF">ToLowerInvariant</span>();
+<span style="color:var(--purple-lt)">var</span> enabled = configuration.<span style="color:#82AAFF">GetValue</span>&lt;<span style="color:var(--purple-lt)">bool</span>&gt;(<span style="color:var(--amber)">$"{moduleName}:module:enabled"</span>);
+<span style="color:var(--purple-lt)">if</span> (!enabled)
+{
+    disabledModules.<span style="color:#82AAFF">Add</span>(file); <span style="color:var(--ink-dim)">// wyłączony moduł nie zostanie załadowany</span>
+}</pre>
+            </div>
+          </div>
+          <div class="box" style="margin-top:26px;">🔑 Wyłączenie modułu to <span class="gk">zmiana flagi w JSON</span>, nie usuwanie kodu. Konfiguracja z Dnia 2 steruje kompozycją.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">13</span> / 43 }</div>
+      <aside class="notes">Pamiętacie warstwy konfiguracji z Dnia 2? Każdy moduł niesie własny plik module.*.json, a host skleja je w jedną konfigurację. Efekt: aplikację można wdrożyć z wyłączonym modułem jedną flagą. Na koniec sekcji: zadanie Z1 w aplikacji (implementacja IModule).</aside>
+    </section>
+
+    <!-- ============ 14 · KOD · APPLICATIONPARTMANAGER ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 2 · Bootstrapper</div>
+        <h3 class="head" style="font-size:36px; margin-bottom:12px;"><span class="ac">APPLICATIONPARTMANAGER</span>: DRUGA POŁOWA WYŁĄCZNIKA</h3>
+        <div class="vc">
+          <div style="font-size:15.5px; color:var(--ink-dim); margin:0 4px 14px; line-height:1.45;">MVC składa kontrolery z części aplikacji (application parts), zwykle jedna część to jedno assembly. <span style="font-family:var(--font-mono); color:var(--ink);">ApplicationPartManager</span> pozwala tą listą zarządzać w runtime: nawet gdy DLL modułu jest załadowana, jego kontrolery znikają z aplikacji.</div>
+          <div class="codewrap mt">
+            <div class="chiprow"><span class="chip chip-new"><b>NOWOŚĆ</b>&nbsp;· APPLICATIONPARTMANAGER</span></div>
+<pre class="code" style="font-size:10.5px; line-height:1.38; margin:0; padding:12px 16px;"><span style="color:var(--ink-dim)">// Shared.Infrastructure/Extensions.cs</span>
+services.<span style="color:#82AAFF">AddControllers</span>()
+    .<span style="color:var(--teal-bright)">ConfigureApplicationPartManager</span>(manager =&gt;
+    {
+        <span style="color:var(--purple-lt)">var</span> removedParts = <span style="color:var(--purple-lt)">new</span> <span style="color:#82AAFF">List</span>&lt;<span style="color:#82AAFF">ApplicationPart</span>&gt;();
+        <span style="color:var(--purple-lt)">foreach</span> (<span style="color:var(--purple-lt)">var</span> disabledModule <span style="color:var(--purple-lt)">in</span> disabledModules) <span style="color:var(--ink-dim)">// lista z poprzedniego slajdu</span>
+        {
+            removedParts.<span style="color:#82AAFF">AddRange</span>(manager.ApplicationParts.<span style="color:#82AAFF">Where</span>(x =&gt;
+                x.Name.<span style="color:#82AAFF">Contains</span>(disabledModule, StringComparison.InvariantCultureIgnoreCase)));
+        }
+        <span style="color:var(--purple-lt)">foreach</span> (<span style="color:var(--purple-lt)">var</span> part <span style="color:var(--purple-lt)">in</span> removedParts)
+        {
+            manager.ApplicationParts.<span style="color:var(--teal-bright)">Remove</span>(part); <span style="color:var(--ink-dim)">// kontrolery wyłączonego modułu przestają istnieć</span>
+        }
+        manager.FeatureProviders.<span style="color:#82AAFF">Add</span>(<span style="color:var(--purple-lt)">new</span> <span style="color:#82AAFF">InternalControllerFeatureProvider</span>()); <span style="color:var(--ink-dim)">// widzi też internal</span>
+    });</pre>
+          </div>
+          <div class="box" style="margin-top:18px;">🔑 <span class="gk">LoadAssemblies</span> pomija DLL, <span class="gk">ApplicationPartManager</span> sprząta po stronie MVC: wyłączony moduł znika razem z endpointami.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">14</span> / 43 }</div>
+      <aside class="notes">Flaga enabled ma dwie połowy. LoadAssemblies nie załaduje DLL wyłączonego modułu, ale część modułów i tak wjeżdża do procesu przez referencje projektowe. Wtedy wkracza ApplicationPartManager: usuwa części aplikacji wyłączonych modułów, więc MVC nie zobaczy ich kontrolerów. Bonus: InternalControllerFeatureProvider pozwala MVC odkrywać kontrolery internal, czyli te schowane wewnątrz modułów.</aside>
+    </section>
+
+    <!-- ============ 15 · DYWIDER S3 ============ -->
+    <section class="slide-divider variant-atmospheric">
+      <div class="stack">
+        <div class="num">SEKCJA 3</div>
+        <h2>MODUŁ <span class="grad">CRUD</span></h2>
+        <div class="lead">Prosta domena dostaje prosty kod: ParkingSpots od środka.</div>
+      </div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">15</span> / 43 }</div>
+      <aside class="notes">Wchodzimy do pierwszego modułu. Celowo zaczynamy od najprostszego, żeby zobaczyć, że modularny monolit nie wymusza ciężkiej architektury tam, gdzie jej nie potrzeba.</aside>
+    </section>
+
+    <!-- ============ 15 · KOD · PARKINGSPOTS ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 3 · Moduł CRUD</div>
+        <h3 class="head" style="font-size:40px; margin-bottom:10px;">PARKINGSPOTS: PROSTA DOMENA, <span class="ac">PROSTY</span> KOD</h3>
+        <div class="vc">
+          <div class="row" style="gap:22px; align-items:stretch;">
+            <div style="flex:0 0 250px; display:flex; flex-direction:column; justify-content:center;">
+              <div class="pstack">
+                <div class="pcard"><div class="pcn">ParkingSpots.Api</div><div class="pcd">endpointy modułu</div></div>
+                <div class="pcard"><div class="pcn">ParkingSpots.Core</div><div class="pcd">serwis, encje, DbContext</div></div>
+              </div>
+            </div>
+            <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:14px;">
+              <div class="codewrap mt">
+                <div class="chiprow"><span class="chip"><b>DZIEŃ 1</b>&nbsp;· KLASA I WŁAŚCIWOŚCI</span></div>
+<pre class="code" style="font-size:10px; line-height:1.32; margin:0; padding:10px 14px;"><span style="color:var(--ink-dim)">// encja: klasa z właściwościami get/set</span>
+<span style="color:var(--purple-lt)">public class</span> <span style="color:#82AAFF">ParkingSpot</span>
+{
+    <span style="color:var(--purple-lt)">public</span> <span style="color:#82AAFF">Guid</span> Id { <span style="color:var(--purple-lt)">get; set;</span> }
+    <span style="color:var(--purple-lt)">public</span> <span style="color:var(--purple-lt)">string</span> Name { <span style="color:var(--purple-lt)">get; set;</span> } = <span style="color:var(--purple-lt)">string</span>.Empty;
+    <span style="color:var(--purple-lt)">public</span> <span style="color:var(--purple-lt)">int</span> DisplayOrder { <span style="color:var(--purple-lt)">get; set;</span> }
+}</pre>
+              </div>
+              <div class="codewrap mt">
+                <div class="chiprow"><span class="chip"><b>DZIEŃ 2</b>&nbsp;· DI</span><span class="chip"><b>DZIEŃ 2</b>&nbsp;· EF CORE</span></div>
+<pre class="code" style="font-size:10px; line-height:1.32; margin:0; padding:10px 14px;"><span style="color:var(--purple-lt)">internal sealed class</span> <span style="color:var(--teal-bright)">ParkingSpotsService</span> : <span style="color:#82AAFF">IParkingSpotsService</span>
+{
+    <span style="color:var(--purple-lt)">private readonly</span> <span style="color:#82AAFF">ParkingSpotsDbContext</span> _context;
+    <span style="color:var(--ink-dim)">// ... zależności dostarcza kontener DI</span>
+
+    <span style="color:var(--purple-lt)">public async</span> <span style="color:#82AAFF">Task</span> <span style="color:#82AAFF">AddAsync</span>(<span style="color:#82AAFF">ParkingSpot</span> parkingSpot)
+    {
+        <span style="color:var(--purple-lt)">await</span> _context.ParkingSpots.<span style="color:#82AAFF">AddAsync</span>(parkingSpot);
+        <span style="color:var(--purple-lt)">await</span> _context.<span style="color:#82AAFF">SaveChangesAsync</span>(); <span style="color:var(--ink-dim)">// zapis przez EF Core</span>
+    }
+
+    <span style="color:var(--purple-lt)">public async</span> <span style="color:#82AAFF">Task</span> <span style="color:#82AAFF">DeleteAsync</span>(<span style="color:#82AAFF">Guid</span> parkingSpotId)
+    {
+        <span style="color:var(--purple-lt)">var</span> parkingSpot = <span style="color:var(--purple-lt)">await</span> _context.ParkingSpots
+            .<span style="color:#82AAFF">SingleOrDefaultAsync</span>(x =&gt; x.Id == parkingSpotId);
+        <span style="color:var(--purple-lt)">if</span> (parkingSpot <span style="color:var(--purple-lt)">is null</span>)
+            <span style="color:var(--purple-lt)">throw new</span> <span style="color:#82AAFF">ParkingSpotNotFoundException</span>(parkingSpotId);
+
+        _context.ParkingSpots.<span style="color:#82AAFF">Remove</span>(parkingSpot);
+        <span style="color:var(--purple-lt)">await</span> _context.<span style="color:#82AAFF">SaveChangesAsync</span>();
+    }
+}</pre>
+              </div>
+            </div>
+          </div>
+          <div class="box" style="margin-top:12px;">🔑 Ewidencja miejsc to prosta domena, więc dostaje prosty kod. <span class="gk">Dojrzałość modułu wynika z domeny</span>, nie z ambicji.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">16</span> / 43 }</div>
+      <aside class="notes">Zero nowych konceptów: klasa z get/set z Dnia 1, DI i EF Core z Dnia 2. Dwa projekty i serwis aplikacyjny z DTO na wejściu. Pytanie kontrolne do grupy: czy dołożenie tu czterech warstw cokolwiek by poprawiło?</aside>
+    </section>
+
+    <!-- ============ 16 · DYWIDER S4 ============ -->
+    <section class="slide-divider variant-atmospheric">
+      <div class="stack">
+        <div class="num">SEKCJA 4</div>
+        <h2 style="font-size:76px; letter-spacing:-2px;">CLEAN ARCHITECTURE I <span class="grad">CQRS</span></h2>
+        <div class="lead">Availability i Reservations mają złożoną domenę: dostają pełny rozdział warstw i osobne typy zapisu i odczytu.</div>
+      </div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">17</span> / 43 }</div>
+      <aside class="notes">Teraz drugi biegun. Tam, gdzie żyją reguły biznesowe, kod dostaje strukturę, która te reguły chroni. Najdłuższa sekcja dnia.</aside>
+    </section>
+
+    <!-- ============ 17 · PORÓWNANIE · WARSTWOWA VS CLEAN ============ -->
+    <section class="d1 cmp2">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 4 · Clean Architecture i CQRS</div>
+        <h3 class="head" style="font-size:42px; margin-bottom:18px;">ARCHITEKTURA WARSTWOWA VS <span class="ac">CLEAN</span></h3>
+        <div class="row" style="gap:26px; flex:1; align-items:stretch !important;">
+          <div class="defbox" style="justify-content:center; gap:20px;">
+            <div class="lay-stack">
+              <div class="lb">UI</div><div class="la">↓</div>
+              <div class="lb">LOGIKA</div><div class="la">↓</div>
+              <div class="lb">DOSTĘP DO DANYCH</div><div class="la">↓</div>
+              <div class="lb dbb">BAZA DANYCH</div>
+            </div>
+            <div class="bcat" style="color:var(--amber);">DATA-CENTRIC</div>
+            <div class="bdef" style="font-size:20px;">Wszystko stoi na bazie danych. Model danych dyktuje kształt kodu: zmiana schematu promieniuje w górę przez wszystkie warstwy.</div>
+          </div>
+          <div class="defbox cs" style="justify-content:center; gap:20px;">
+            <div class="lay-onion">
+              <div class="lo o1"></div>
+              <div class="lo o2"></div>
+              <div class="lo o3">DOMENA</div>
+              <div class="lt" style="top:-2px; left:50%; transform:translateX(-50%);">BAZA</div>
+              <div class="li" style="top:26px; left:50%; transform:translateX(-50%);">↓</div>
+              <div class="lt" style="bottom:22px; left:-18px;">FRAMEWORK</div>
+              <div class="li" style="bottom:44px; left:34px;">↗</div>
+              <div class="lt" style="bottom:22px; right:-16px;">TRANSPORT</div>
+              <div class="li" style="bottom:44px; right:34px;">↖</div>
+            </div>
+            <div class="bcat" style="color:var(--teal);">DOMAIN-CENTRIC</div>
+            <div class="bdef" style="font-size:20px;">W centrum model domeny. Baza, framework i transport to wymienialne szczegóły na obrzeżach: domena o nich nie wie.</div>
+          </div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">18</span> / 43 }</div>
+      <aside class="notes">Klasyczna warstwówka nie jest zła, ale wiąże logikę z bazą. Clean odwraca zależność: to szczegóły zależą od domeny, nie odwrotnie. Za chwilę zobaczymy, że to nie filozofia, tylko konkretne referencje między projektami.</aside>
+    </section>
+
+    <!-- ============ 18 · ONION ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 4 · Clean Architecture i CQRS</div>
+        <h3 class="head" style="font-size:38px; margin-bottom:12px;">CLEAN ARCHITECTURE: ZALEŻNOŚCI ZAWSZE DO <span class="ac">ŚRODKA</span></h3>
+        <div class="onion-wrap" style="gap:40px;">
+          <div class="onion-col">
+            <div class="oann"><span class="oa-t">Zależności zawsze do środka</span><span class="oa-dn">⤵</span></div>
+            <div class="onion sm">
+              <div class="ring api"><span class="rl">API</span></div>
+              <div class="ring infra"><span class="rl">INFRASTRUCTURE</span></div>
+              <div class="ring app"><span class="rl">APPLICATION</span></div>
+              <div class="ring domain"><span class="rc">DOMAIN</span></div>
+            </div>
+          </div>
+          <div class="oleg">
+            <div class="olg dom"><div class="oh">Domain</div><div class="oc"><span class="ochip">Aggregate</span><span class="ochip">Value Object</span><span class="ochip">Repository interfaces</span><span class="ochip">Domain events</span></div></div>
+            <div class="olg app"><div class="oh">Application</div><div class="oc"><span class="ochip">Command handlers</span><span class="ochip">Queries</span><span class="ochip">DTO</span><span class="ochip">Dispatchers</span></div></div>
+            <div class="olg inf"><div class="oh">Infrastructure</div><div class="oc"><span class="ochip">EF Core</span><span class="ochip">Message broker</span><span class="ochip">Module client</span><span class="ochip">Query handlers</span></div></div>
+          </div>
+        </div>
+        <div class="box" style="margin-top:14px;">🔑 Środek nie wie nic o EF ani brokerze. <span class="gk">Interfejsy repozytoriów mieszkają w domenie</span>, implementacje na zewnątrz.</div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">19</span> / 43 }</div>
+      <aside class="notes">Kluczowa obserwacja na kaflach: interfejs repozytorium jest w środku, EF Core na zewnątrz. Domena mówi „czego potrzebuję", infrastruktura odpowiada „ja to umiem". Jedna reguła do zapamiętania: strzałka zawsze do środka.</aside>
+    </section>
+
+    <!-- ============ 19 · KOD · CSPROJ ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 4 · Clean Architecture i CQRS</div>
+        <h3 class="head" style="font-size:40px; margin-bottom:16px;"><span class="ac">KIERUNEK</span> ZALEŻNOŚCI WYMUSZONY KOMPILATOREM</h3>
+        <div class="vc">
+          <div class="row" style="gap:26px; align-items:stretch;">
+            <div style="flex:0 0 300px; display:flex; flex-direction:column; justify-content:center;">
+              <div class="pstack" style="gap:6px;">
+                <div class="pcard"><div class="pcn">Availability.Api</div></div>
+                <div style="text-align:center; color:var(--ink-dim); font-size:14px; line-height:1;">↓ ProjectReference</div>
+                <div class="pcard"><div class="pcn">Availability.Infrastructure</div></div>
+                <div style="text-align:center; color:var(--ink-dim); font-size:14px; line-height:1;">↓ ProjectReference</div>
+                <div class="pcard"><div class="pcn">Availability.Application</div></div>
+                <div style="text-align:center; color:var(--ink-dim); font-size:14px; line-height:1;">↓ ProjectReference</div>
+                <div class="pcard dom"><div class="pcn">Availability.Core</div><div class="pcd">wszystkie referencje zbiegają tutaj</div></div>
+              </div>
+            </div>
+            <div style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center;">
+<pre class="code" style="font-size:11.5px; line-height:1.55; margin:0;"><span style="color:var(--ink-dim)">&lt;!-- MySpot.Modules.Availability.Core.csproj --&gt;</span>
+<span style="color:#82AAFF">&lt;Project</span> <span style="color:#C792EA">Sdk</span>=<span style="color:#C3E88D">"Microsoft.NET.Sdk"</span><span style="color:#82AAFF">&gt;</span>
+
+    <span style="color:#82AAFF">&lt;PropertyGroup&gt;</span>
+        <span style="color:#82AAFF">&lt;TargetFramework&gt;</span>net10.0<span style="color:#82AAFF">&lt;/TargetFramework&gt;</span>
+    <span style="color:#82AAFF">&lt;/PropertyGroup&gt;</span>
+
+    <span style="color:#82AAFF">&lt;ItemGroup&gt;</span>
+      <span style="color:var(--ink-dim)">&lt;!-- jedyna referencja: wspólne kontrakty; zero EF, zero ASP.NET --&gt;</span>
+      <span style="color:#82AAFF">&lt;ProjectReference</span> <span style="color:#C792EA">Include</span>=<span style="color:#C3E88D">"..\..\..\Shared\MySpot.Shared.Abstractions\MySpot.Shared.Abstractions.csproj"</span> <span style="color:#82AAFF">/&gt;</span>
+    <span style="color:#82AAFF">&lt;/ItemGroup&gt;</span>
+
+<span style="color:#82AAFF">&lt;/Project&gt;</span></pre>
+            </div>
+          </div>
+          <div class="box crit" style="margin-top:22px;">⚠️ <span style="font-family:var(--font-mono); color:var(--red);">using Microsoft.EntityFrameworkCore;</span> w projekcie Core <b>się nie skompiluje</b>. Najtańszy strażnik architektury: kompilator. Zła zależność = czerwony build, nie komentarz w PR.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">20</span> / 43 }</div>
+      <aside class="notes">Spróbujcie w projekcie Core napisać using Microsoft.EntityFrameworkCore. Nie skompiluje się, bo csproj nie referuje EF. Reguła architektury nie żyje w dokumencie ani w głowie architekta, tylko w buildzie.</aside>
+    </section>
+
+    <!-- ============ 20 · KOD · PORT I ADAPTER ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 4 · Clean Architecture i CQRS</div>
+        <h3 class="head" style="font-size:40px; margin-bottom:16px;"><span class="ac">PORT</span> I ADAPTER + REJESTRACJA DI</h3>
+        <div class="vc">
+          <div class="row" style="gap:16px; align-items:stretch;">
+            <div style="flex:1; min-width:0;">
+<pre class="code" style="font-size:11px; line-height:1.5; margin:0; padding:14px 18px;"><span style="color:var(--ink-dim)">// Availability.Core: port, czyli czego potrzebuje domena</span>
+<span style="color:var(--purple-lt)">public interface</span> <span style="color:var(--teal-bright)">IResourcesRepository</span>
+{
+    <span style="color:#82AAFF">Task</span>&lt;<span style="color:#82AAFF">Resource</span>&gt; <span style="color:#82AAFF">GetAsync</span>(<span style="color:#82AAFF">AggregateId</span> id);
+    <span style="color:#82AAFF">Task</span> <span style="color:#82AAFF">AddAsync</span>(<span style="color:#82AAFF">Resource</span> resource);
+    <span style="color:#82AAFF">Task</span> <span style="color:#82AAFF">UpdateAsync</span>(<span style="color:#82AAFF">Resource</span> resource);
+    <span style="color:#82AAFF">Task</span> <span style="color:#82AAFF">DeleteAsync</span>(<span style="color:#82AAFF">Resource</span> resource);
+}</pre>
+            </div>
+            <div style="flex:1.15; min-width:0;">
+<pre class="code" style="font-size:11px; line-height:1.5; margin:0; padding:14px 18px;"><span style="color:var(--ink-dim)">// Availability.Infrastructure: adapter na EF Core</span>
+<span style="color:var(--amber)">internal</span> <span style="color:var(--purple-lt)">sealed class</span> <span style="color:#82AAFF">ResourcesRepository</span> : <span style="color:#82AAFF">IResourcesRepository</span>
+{
+    <span style="color:var(--purple-lt)">private readonly</span> <span style="color:#82AAFF">AvailabilityDbContext</span> _context;
+
+    <span style="color:var(--purple-lt)">public</span> <span style="color:#82AAFF">Task</span>&lt;<span style="color:#82AAFF">Resource</span>&gt; <span style="color:#82AAFF">GetAsync</span>(<span style="color:#82AAFF">AggregateId</span> id)
+        =&gt; _context.Resources
+            .<span style="color:#82AAFF">Include</span>(r =&gt; r.Reservations)
+            .<span style="color:#82AAFF">SingleOrDefaultAsync</span>(r =&gt; r.Id == id);
+    <span style="color:var(--ink-dim)">// ...</span>
+}</pre>
+            </div>
+          </div>
+          <div class="codewrap" style="margin-top:20px;">
+            <div class="chiprow"><span class="chip"><b>DZIEŃ 2</b>&nbsp;· DI</span></div>
+<pre class="code" style="font-size:12.5px; line-height:1.55; margin:0;"><span style="color:var(--ink-dim)">// Availability.Infrastructure/Extensions.cs: kontener skleja port z adapterem</span>
+services.<span style="color:var(--teal-bright)">AddTransient</span>&lt;<span style="color:#82AAFF">IResourcesRepository</span>, <span style="color:#82AAFF">ResourcesRepository</span>&gt;();</pre>
+          </div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">21</span> / 43 }</div>
+      <aside class="notes">Pamiętacie rejestracje i cykle życia z Dnia 2? Ta jedna linia to całe „odwrócenie zależności" w praktyce. Zwróćcie uwagę na internal przy adapterze: nikt spoza modułu nie zobaczy, że pod spodem jest EF.</aside>
+    </section>
+
+    <!-- ============ 21 · ASPEKTY · ENKAPSULACJA ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 4 · Clean Architecture i CQRS</div>
+        <h3 class="head" style="font-size:42px; margin-bottom:16px;"><span class="ac">ENKAPSULACJA</span> W AGREGACIE</h3>
+        <div class="vc">
+          <div class="egrid">
+            <div class="ecard">
+              <div class="eh"><span class="et">Brak publicznych setterów</span><span class="chip"><b>DZIEŃ 1</b>&nbsp;· HERMETYZACJA</span></div>
+<pre class="code" style="font-size:11px; line-height:1.5; margin:0; padding:11px 14px;"><span style="color:var(--purple-lt)">public</span> <span style="color:#82AAFF">Capacity</span> Capacity { <span style="color:var(--purple-lt)">get</span>; } <span style="color:var(--ink-dim)">// ustawiane tylko w konstruktorze</span></pre>
+            </div>
+            <div class="ecard">
+              <div class="eh"><span class="et">Zmiana stanu tylko metodą</span><span class="chip"><b>DZIEŃ 1</b>&nbsp;· HERMETYZACJA</span></div>
+<pre class="code" style="font-size:11px; line-height:1.5; margin:0; padding:11px 14px;">resource.<span style="color:var(--teal-bright)">AddReservation</span>(reservation); <span style="color:var(--ink-dim)">// metoda pilnuje kolizji i pojemności</span></pre>
+            </div>
+            <div class="ecard">
+              <div class="eh"><span class="et">Kolekcja ukryta za interfejsem</span><span class="chip"><b>DZIEŃ 1</b>&nbsp;· HERMETYZACJA</span></div>
+<pre class="code" style="font-size:11px; line-height:1.5; margin:0; padding:11px 14px;"><span style="color:var(--purple-lt)">private readonly</span> <span style="color:#82AAFF">ICollection</span>&lt;<span style="color:#82AAFF">Reservation</span>&gt; _reservations = <span style="color:var(--purple-lt)">new</span> <span style="color:#82AAFF">HashSet</span>&lt;<span style="color:#82AAFF">Reservation</span>&gt;();
+<span style="color:var(--purple-lt)">public</span> <span style="color:#82AAFF">IEnumerable</span>&lt;<span style="color:#82AAFF">Reservation</span>&gt; Reservations =&gt; _reservations;</pre>
+            </div>
+            <div class="ecard">
+              <div class="eh"><span class="et">Value object niemutowalny</span><span class="chiprow"><span class="chip"><b>DZIEŃ 1</b>&nbsp;· NIEMUTOWALNOŚĆ</span><span class="chip"><b>DZIEŃ 1</b>&nbsp;· RECORD</span></span></div>
+<pre class="code" style="font-size:11px; line-height:1.5; margin:0; padding:11px 14px;"><span style="color:var(--purple-lt)">public sealed record</span> <span style="color:#82AAFF">Capacity</span>
+{
+    <span style="color:var(--purple-lt)">public</span> <span style="color:#82AAFF">Capacity</span>(<span style="color:var(--purple-lt)">int</span> value)
+    {
+        <span style="color:var(--purple-lt)">if</span> (value <span style="color:var(--purple-lt)">is</span> &lt; <span style="color:#F78C6C">0</span> <span style="color:var(--purple-lt)">or</span> &gt; <span style="color:#F78C6C">4</span>) <span style="color:var(--purple-lt)">throw new</span> <span style="color:#82AAFF">InvalidCapacityException</span>(value);
+        Value = value;
+    }
+}</pre>
+            </div>
+          </div>
+          <div class="box" style="margin-top:18px;">🔑 Agregat to hermetyzacja z Dnia 1 potraktowana serio: stan zmienia się <span class="gk">wyłącznie metodami, które pilnują reguł</span>.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">22</span> / 43 }</div>
+      <aside class="notes">Pamiętacie hermetyzację i niemutowalność z Dnia 1? Tu przestają być teorią: nie da się zepsuć stanu agregatu z zewnątrz, bo język na to nie pozwala. AddReservation sprawdza kolizję terminu i pojemność, zanim cokolwiek zmieni. Pełny listing Resource obejrzymy razem w IDE.</aside>
+    </section>
+
+    <!-- ============ 22 · KOD · POLITYKI ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 4 · Clean Architecture i CQRS</div>
+        <h3 class="head" style="font-size:40px; margin-bottom:16px;"><span class="ac">REGUŁA</span> JAKO TYP: POLITYKI REZERWACJI</h3>
+        <div class="vc">
+          <div class="row" style="gap:24px; align-items:stretch;">
+            <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:12px;">
+<pre class="code" style="font-size:12px; line-height:1.5; margin:0;"><span style="color:var(--purple-lt)">public interface</span> <span style="color:var(--teal-bright)">IReservationPolicy</span>
+{
+    <span style="color:var(--purple-lt)">bool</span> <span style="color:var(--teal-bright)">CanBeApplied</span>(<span style="color:var(--purple-lt)">string</span> jobTitle);
+    <span style="color:var(--purple-lt)">bool</span> <span style="color:var(--teal-bright)">CanReserve</span>(<span style="color:#82AAFF">IEnumerable</span>&lt;<span style="color:#82AAFF">Reservation</span>&gt; reservations);
+}</pre>
+<pre class="code" style="font-size:12px; line-height:1.5; margin:0;"><span style="color:var(--purple-lt)">internal sealed class</span> <span style="color:#82AAFF">BossReservationPolicy</span> : <span style="color:#82AAFF">IReservationPolicy</span>
+{
+    <span style="color:var(--purple-lt)">public bool</span> <span style="color:#82AAFF">CanBeApplied</span>(<span style="color:var(--purple-lt)">string</span> jobTitle)
+        =&gt; jobTitle <span style="color:var(--purple-lt)">is</span> JobTitle.Boss;
+
+    <span style="color:var(--purple-lt)">public bool</span> <span style="color:#82AAFF">CanReserve</span>(<span style="color:#82AAFF">IEnumerable</span>&lt;<span style="color:#82AAFF">Reservation</span>&gt; reservations)
+        =&gt; <span style="color:var(--purple-lt)">true</span>; <span style="color:var(--ink-dim)">// szef rezerwuje bez limitu</span>
+}</pre>
+            </div>
+            <div style="flex:0 0 180px; display:flex; flex-direction:column; justify-content:center;">
+              <div class="rolerow">
+                <div class="rolepill">Boss</div>
+                <div class="rolepill">Manager</div>
+                <div class="rolepill">Regular</div>
+              </div>
+              <div class="src-cap" style="margin-top:12px; text-align:center;">jedna polityka na stanowisko</div>
+            </div>
+          </div>
+          <div class="box" style="margin-top:20px;">🔑 Nowa reguła biznesowa = <span class="gk">nowa klasa</span>, nie edycja istniejącej. Typy jako nośnik reguł.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">23</span> / 43 }</div>
+      <aside class="notes">Limit wg stanowiska można napisać drabinką if/else. Tu jest zbiorem typów-polityk (wzorzec Strategy): dispatcher pyta każdą „czy stosujesz się do tego JobTitle" i deleguje decyzję. Nowe stanowisko to nowy plik, stary kod zostaje nietknięty.</aside>
+    </section>
+
+    <!-- ============ 23 · DIAGRAM · CQS ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 4 · Clean Architecture i CQRS</div>
+        <h3 class="head" style="font-size:42px; margin-bottom:8px;">CQS: PYTAJ <span class="ac">ALBO</span> ZMIENIAJ</h3>
+        <div class="cqs" style="gap:0;">
+          <div class="cqs-top">METODA</div>
+          <div class="cqs-fork">
+            <svg viewBox="0 0 520 64" preserveAspectRatio="none"><path d="M260 2 L150 62" stroke="#48BDB8" stroke-width="2" fill="none"/><path d="M260 2 L370 62" stroke="#9D7BFF" stroke-width="2" fill="none"/></svg>
+            <div class="cqs-amber">separacja na poziomie metody</div>
+          </div>
+          <div class="cqs-cols">
+            <div class="cqs-col q" style="width:400px;">
+              <div class="cqs-h">KWERENDA</div>
+              <div class="cqs-feat"><ul><li>nie zmienia stanu</li><li>zwraca dane</li><li>idempotentna</li></ul></div>
+<pre class="code" style="font-size:11px; line-height:1.4; margin:0; padding:9px 13px;"><span style="color:#82AAFF">Task</span>&lt;<span style="color:#82AAFF">ReservationDto</span>&gt; <span style="color:#82AAFF">GetAsync</span>(<span style="color:#82AAFF">Guid</span> id);</pre>
+            </div>
+            <div class="cqs-col c" style="width:400px;">
+              <div class="cqs-h">KOMENDA</div>
+              <div class="cqs-feat"><ul><li>zmienia stan</li><li>nie zwraca danych</li></ul></div>
+<pre class="code" style="font-size:11px; line-height:1.4; margin:0; padding:9px 13px;"><span style="color:#82AAFF">Task</span> <span style="color:#82AAFF">ReserveAsync</span>(<span style="color:#82AAFF">MakeReservation</span> command);</pre>
+            </div>
+          </div>
+          <div class="box" style="margin-top:24px; max-width:1000px;">🔑 Zasada z poziomu metody: metoda albo <span class="gk">odpowiada na pytanie</span>, albo <span class="gk">zmienia świat</span>. Nigdy jedno i drugie. Wynika z tego: kwerendy można cache'ować i powtarzać bez ryzyka, a komendy mają jedno miejsce walidacji i efektów ubocznych.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">24</span> / 43 }</div>
+      <aside class="notes">Zanim padnie modne słowo CQRS, fundament: Command Query Separation. Sama sygnatura metody mówi, czy jest bezpieczna do powtórzenia. To zasada higieny kodu, jeszcze nie architektura.</aside>
+    </section>
+
+    <!-- ============ 24 · DIAGRAM · CQRS DWA POZIOMY ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 4 · Clean Architecture i CQRS</div>
+        <h3 class="head" style="font-size:42px; margin-bottom:20px;">CQRS: <span class="ac">DWA</span> POZIOMY SEPARACJI</h3>
+        <div class="vc">
+          <div class="cqrs2">
+            <div class="band">
+              <div class="bl">poziom obiektowy: osobne typy, jedna baza</div>
+              <div style="display:grid; grid-template-columns:1fr 40px auto; gap:12px; align-items:center;">
+                <div style="display:flex; flex-direction:column; gap:9px;">
+                  <div class="cq-box w">KOMENDA + HANDLER</div>
+                  <div class="cq-box r">KWERENDA + HANDLER</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:26px; align-items:center;"><span class="cq-arr">→</span><span class="cq-arr">→</span></div>
+                <div class="cq-db" style="padding:0 26px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>jedna baza</div>
+              </div>
+              <div class="bnote">Ten poziom realizuje MySpot: osobne typy komend i kwerend, wspólna baza danych.</div>
+            </div>
+            <div class="band">
+              <div class="bl">poziom systemowy: osobne modele odczytu i zapisu</div>
+              <div style="display:grid; grid-template-columns:1fr 40px auto; gap:12px; align-items:center;">
+                <div class="cq-box w">WRITE SIDE<small>model zapisu</small></div>
+                <span class="cq-arr" style="text-align:center;">→</span>
+                <div class="cq-db" style="padding:0 26px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>baza zapisu</div>
+              </div>
+              <div class="cq-ev"><span>ZDARZENIA · synchronizacja stanu</span></div>
+              <div style="display:grid; grid-template-columns:1fr 40px auto; gap:12px; align-items:center;">
+                <div class="cq-box r">READ SIDE<small>model odczytu</small></div>
+                <span class="cq-arr" style="text-align:center;">→</span>
+                <div class="cq-db" style="padding:0 26px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>baza odczytu<small>opcjonalnie osobna baza</small></div>
+              </div>
+              <div class="bnote">Opcja dla skali, nie wymóg wzorca: odczyt i zapis dostają własne modele, czasem własne bazy.</div>
+            </div>
+          </div>
+          <div class="box" style="margin-top:18px;">🔑 CQRS <span class="gk">NIE implikuje dwóch baz</span>. Minimum to osobne typy komend i kwerend; osobne bazy to świadoma decyzja o skali.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">25</span> / 43 }</div>
+      <aside class="notes">Najczęstsze nieporozumienie w rozmowach o CQRS: „to trzeba mieć dwie bazy". Nie. Pasmo górne wystarcza w większości projektów i to ono jest w MySpocie. Pasmo dolne włącza się, gdy odczyt i zapis mają radykalnie różne wymagania.</aside>
+    </section>
+
+    <!-- ============ 25 · KOD · ICOMMAND + DISPATCHER ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 4 · Clean Architecture i CQRS</div>
+        <h3 class="head" style="font-size:38px; margin-bottom:16px;">IMPLEMENTACJA: JEDEN KONTRAKT ICOMMAND I <span class="ac">DISPATCHER</span></h3>
+        <div class="vc">
+          <div class="codewrap mt">
+            <div class="chiprow"><span class="chip"><b>DZIEŃ 1</b>&nbsp;· GENERYKI</span></div>
+<pre class="code" style="font-size:11px; line-height:1.45; margin:0; padding:14px 18px;"><span style="color:var(--ink-dim)">// znacznik: komenda to zwykły obiekt</span>
+<span style="color:var(--purple-lt)">public interface</span> <span style="color:#82AAFF">ICommand</span> : <span style="color:#82AAFF">IMessage</span> { }
+
+<span style="color:var(--purple-lt)">public interface</span> <span style="color:var(--teal-bright)">ICommandHandler&lt;in TCommand&gt;</span> <span style="color:var(--purple-lt)">where</span> TCommand : <span style="color:var(--purple-lt)">class</span>, <span style="color:#82AAFF">ICommand</span>
+{
+    <span style="color:#82AAFF">Task</span> <span style="color:#82AAFF">HandleAsync</span>(TCommand command, <span style="color:#82AAFF">CancellationToken</span> cancellationToken = <span style="color:var(--purple-lt)">default</span>);
+}</pre>
+          </div>
+          <div class="codewrap" style="margin-top:22px;">
+            <div class="chiprow"><span class="chip"><b>DZIEŃ 2</b>&nbsp;· SERVICE PROVIDER</span></div>
+<pre class="code" style="font-size:11px; line-height:1.45; margin:0; padding:14px 18px;"><span style="color:var(--purple-lt)">public sealed class</span> <span style="color:#82AAFF">CommandDispatcher</span> : <span style="color:#82AAFF">ICommandDispatcher</span>
+{
+    <span style="color:var(--purple-lt)">private readonly</span> <span style="color:#82AAFF">IServiceProvider</span> _serviceProvider;
+
+    <span style="color:var(--purple-lt)">public</span> <span style="color:#82AAFF">CommandDispatcher</span>(<span style="color:#82AAFF">IServiceProvider</span> serviceProvider)
+        =&gt; _serviceProvider = serviceProvider;
+
+    <span style="color:var(--purple-lt)">public async</span> <span style="color:#82AAFF">Task</span> <span style="color:#82AAFF">SendAsync</span>&lt;TCommand&gt;(TCommand command,
+        <span style="color:#82AAFF">CancellationToken</span> cancellationToken = <span style="color:var(--purple-lt)">default</span>) <span style="color:var(--purple-lt)">where</span> TCommand : <span style="color:var(--purple-lt)">class</span>, <span style="color:#82AAFF">ICommand</span>
+    {
+        <span style="color:var(--purple-lt)">using var</span> scope = _serviceProvider.<span style="color:#82AAFF">CreateScope</span>();
+        <span style="color:var(--purple-lt)">var</span> handler = scope.ServiceProvider.<span style="color:var(--teal-bright)">GetRequiredService</span>&lt;<span style="color:#82AAFF">ICommandHandler</span>&lt;TCommand&gt;&gt;();
+        <span style="color:var(--purple-lt)">await</span> handler.<span style="color:#82AAFF">HandleAsync</span>(command, cancellationToken);
+    }
+}</pre>
+          </div>
+          <div class="box" style="margin-top:20px;">🔑 Cały „framework CQRS" to 30 linii: <span class="gk">generyki z Dnia 1</span> plus <span class="gk">kontener z Dnia 2</span>. Nie potrzeba biblioteki.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">26</span> / 43 }</div>
+      <aside class="notes">Celowo jeden prosty kontrakt zamiast paczki zewnętrznej (bez MediatR): żeby było widać, że pod spodem nie ma magii. Pamiętacie generyki z Dnia 1 i CreateScope z Dnia 2? Dispatcher tworzy scope, prosi kontener o handler dla typu komendy i tyle. Cała reszta to konwencja.</aside>
+    </section>
+
+    <!-- ============ 26 · KOD · KOMENDA I KWERENDA ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 4 · Clean Architecture i CQRS</div>
+        <h3 class="head" style="font-size:40px; margin-bottom:16px;">KOMENDA I KWERENDA W <span class="ac">KODZIE</span></h3>
+        <div class="vc">
+          <div class="row" style="gap:16px; align-items:stretch;">
+            <div class="codewrap mt" style="flex:1.1; min-width:0;">
+              <div class="chiprow" style="top:-34px; left:0; right:auto;"><span class="chip"><b>DZIEŃ 1</b>&nbsp;· RECORD</span><span class="chip"><b>DZIEŃ 1</b>&nbsp;· ASYNC/AWAIT</span><span class="chip"><b>DZIEŃ 1</b>&nbsp;· PATTERN MATCHING</span></div>
+<pre class="code" style="font-size:10.5px; line-height:1.4; margin:0; padding:14px 16px;"><span style="color:var(--purple-lt)">public record</span> <span style="color:#82AAFF">SignUp</span>(<span style="color:#82AAFF">Guid</span> UserId, <span style="color:var(--purple-lt)">string</span> Email, <span style="color:var(--purple-lt)">string</span> Password,
+    <span style="color:var(--purple-lt)">string</span> JobTitle = <span style="color:var(--purple-lt)">null</span>, <span style="color:var(--purple-lt)">string</span> Role = <span style="color:var(--purple-lt)">null</span>) : <span style="color:#82AAFF">ICommand</span>;
+
+<span style="color:var(--purple-lt)">internal sealed class</span> <span style="color:#82AAFF">SignUpHandler</span> : <span style="color:var(--teal-bright)">ICommandHandler&lt;SignUp&gt;</span>
+{
+    <span style="color:var(--purple-lt)">public async</span> <span style="color:#82AAFF">Task</span> <span style="color:#82AAFF">HandleAsync</span>(<span style="color:#82AAFF">SignUp</span> command,
+        <span style="color:#82AAFF">CancellationToken</span> cancellationToken = <span style="color:var(--purple-lt)">default</span>)
+    {
+        <span style="color:var(--purple-lt)">if</span> (<span style="color:var(--purple-lt)">string</span>.<span style="color:#82AAFF">IsNullOrWhiteSpace</span>(command.Email)
+            || !EmailAddressAttribute.<span style="color:#82AAFF">IsValid</span>(command.Email))
+        {
+            <span style="color:var(--purple-lt)">throw new</span> <span style="color:#82AAFF">InvalidEmailException</span>(command.Email);
+        }
+
+        <span style="color:var(--purple-lt)">var</span> user = <span style="color:var(--purple-lt)">await</span> _userRepository
+            .<span style="color:#82AAFF">GetAsync</span>(command.Email.<span style="color:#82AAFF">ToLowerInvariant</span>());
+        <span style="color:var(--purple-lt)">if</span> (user <span style="color:var(--purple-lt)">is not null</span>) <span style="color:var(--ink-dim)">// taki e-mail już istnieje</span>
+        {
+            <span style="color:var(--purple-lt)">throw new</span> <span style="color:#82AAFF">EmailInUseException</span>();
+        }
+
+        <span style="color:var(--ink-dim)">// ... utworzenie użytkownika i zapis przez repozytorium</span>
+        <span style="color:var(--purple-lt)">await</span> _messageBroker.<span style="color:#82AAFF">PublishAsync</span>(<span style="color:var(--purple-lt)">new</span> <span style="color:#82AAFF">SignedUp</span>(
+            user.Id, email, role.Name, jobTitle), cancellationToken);
+    }
+}</pre>
+            </div>
+            <div class="codewrap mt" style="flex:1; min-width:0; display:flex; flex-direction:column;">
+<pre class="code" style="font-size:10.5px; line-height:1.4; margin:0; padding:14px 16px; flex:1;"><span style="color:var(--purple-lt)">internal sealed class</span> <span style="color:#82AAFF">GetUserHandler</span>
+    : <span style="color:var(--teal-bright)">IQueryHandler&lt;GetUser, UserDetailsDto&gt;</span>
+{
+    <span style="color:var(--purple-lt)">public async</span> <span style="color:#82AAFF">Task</span>&lt;<span style="color:#82AAFF">UserDetailsDto</span>&gt; <span style="color:#82AAFF">HandleAsync</span>(<span style="color:#82AAFF">GetUser</span> query,
+        <span style="color:#82AAFF">CancellationToken</span> cancellationToken = <span style="color:var(--purple-lt)">default</span>)
+    {
+        <span style="color:var(--purple-lt)">var</span> user = <span style="color:var(--purple-lt)">await</span> _dbContext.Users
+            .<span style="color:#82AAFF">AsNoTracking</span>() <span style="color:var(--ink-dim)">// odczyt bez śledzenia zmian</span>
+            .<span style="color:#82AAFF">Include</span>(x =&gt; x.Role)
+            .<span style="color:#82AAFF">SingleOrDefaultAsync</span>(x =&gt; x.Id == query.UserId,
+                cancellationToken);
+
+        <span style="color:var(--purple-lt)">return</span> user?.<span style="color:#82AAFF">AsDetailsDto</span>();
+    }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">27</span> / 43 }</div>
+      <aside class="notes">Pamiętacie rekordy, async/await i pattern matching z Dnia 1? To nie były ćwiczenia na sucho: tu jest produkcyjny handler, który używa wszystkich trzech naraz. Kwerenda z AsNoTracking to praktyczne domknięcie CQS: odczyt jest tani, bo z definicji niczego nie zmienia.</aside>
+    </section>
+
+    <!-- ============ 27 · DYWIDER S5 ============ -->
+    <section class="slide-divider variant-atmospheric">
+      <div class="stack">
+        <div class="num">SEKCJA 5</div>
+        <h2 style="font-size:84px; letter-spacing:-2px;">KOMUNIKACJA POMIĘDZY <span class="grad">MODUŁAMI</span></h2>
+        <div class="lead">Czyli jak jeden moduł wywołuje drugi bez sięgania do jego bazy: synchronicznie, przez współdzielone i lokalne kontrakty.</div>
+      </div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">28</span> / 43 }</div>
+      <aside class="notes">Moduły są odizolowane, ale muszą ze sobą rozmawiać. Zaczynamy od rozmowy „na żywo": wołam i czekam na wynik.</aside>
+    </section>
+
+    <!-- ============ 28 · KOD · WSPÓŁDZIELONE KONTRAKTY ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 5 · Komunikacja synchroniczna</div>
+        <h3 class="head" style="font-size:38px; margin-bottom:16px;">SYNCHRONICZNIE PRZEZ <span class="ac">WSPÓŁDZIELONE</span> KONTRAKTY</h3>
+        <div class="vc">
+          <div class="shr">
+            <div class="sc"><div class="st">Konsument</div><div class="sd">inny moduł MySpota</div></div>
+            <div class="sa"><b>→</b>referencja</div>
+            <div class="sc mid"><div class="st">Availability.Shared</div><div class="sd">IAvailabilityModuleApi + AddResourceDto</div><span class="svis pub">PUBLIC</span></div>
+            <div class="sa"><b>←</b>implementacja</div>
+            <div class="sc"><div class="st">Availability.Application</div><div class="sd">AvailabilityModuleApi</div><span class="svis int">INTERNAL</span></div>
+          </div>
+          <div style="font-size:16px; color:var(--ink-dim); margin:12px 4px 0; line-height:1.45;">Mała paczka kontraktowa <span style="font-family:var(--font-mono); color:var(--ink);">*.Shared</span> to publiczny interfejs plus DTO. Konsument referuje tylko ją, nigdy wnętrze modułu. Wzorzec znany z systemów rozproszonych: paczka kontraktów klienta.</div>
+          <div class="row" style="gap:16px; align-items:stretch; margin-top:18px;">
+            <div style="flex:1; min-width:0;">
+<pre class="code" style="font-size:11.5px; line-height:1.5; margin:0; height:100%; padding:14px 18px;"><span style="color:var(--ink-dim)">// Availability.Shared: to widzą sąsiedzi</span>
+<span style="color:var(--teal-bright)">public</span> <span style="color:var(--purple-lt)">interface</span> <span style="color:#82AAFF">IAvailabilityModuleApi</span>
+{
+    <span style="color:#82AAFF">Task</span> <span style="color:#82AAFF">AddResourceAsync</span>(<span style="color:#82AAFF">AddResourceDto</span> dto);
+}</pre>
+            </div>
+            <div class="codewrap mt" style="flex:1.2; min-width:0;">
+              <div class="chiprow"><span class="chip"><b>DZIEŃ 1</b>&nbsp;· MODYFIKATORY DOSTĘPNOŚCI</span></div>
+<pre class="code" style="font-size:11.5px; line-height:1.5; margin:0; height:100%; padding:14px 18px;"><span style="color:var(--ink-dim)">// Availability.Application: tego sąsiedzi nie zobaczą</span>
+<span style="color:var(--amber)">internal</span> <span style="color:var(--purple-lt)">sealed class</span> <span style="color:#82AAFF">AvailabilityModuleApi</span> : <span style="color:#82AAFF">IAvailabilityModuleApi</span>
+{
+    <span style="color:var(--ink-dim)">// ... deleguje do dispatchera komend</span>
+}
+
+services.<span style="color:var(--teal-bright)">AddScoped</span>&lt;<span style="color:#82AAFF">IAvailabilityModuleApi</span>, <span style="color:#82AAFF">AvailabilityModuleApi</span>&gt;();</pre>
+            </div>
+          </div>
+          <div class="box" style="margin-top:34px;">🔑 <span class="gk">public</span> i <span class="gk">internal</span> z Dnia 1 to tutaj narzędzie architektury: kompilator pilnuje, że sąsiad widzi tylko kontrakt.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">29</span> / 43 }</div>
+      <aside class="notes">Pamiętacie modyfikatory dostępności z Dnia 1? Wtedy wyglądały na formalność, tu robią robotę architektoniczną: internal zamyka wnętrze modułu na klucz. Konsument dostaje interfejs i DTO, nic więcej.</aside>
+    </section>
+
+    <!-- ============ 29 · KOD · LOKALNE KONTRAKTY ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 5 · Komunikacja synchroniczna</div>
+        <h3 class="head" style="font-size:38px; margin-bottom:16px;">SYNCHRONICZNIE PRZEZ <span class="ac">LOKALNE</span> KONTRAKTY</h3>
+        <div class="vc">
+          <div class="mflow eq" style="margin-bottom:10px;">
+            <div class="mf">MODUŁ A</div>
+            <span class="larr">→</span>
+            <div class="mf teal">ModuleClient.SendAsync(<br>"parking-spots/get", request)</div>
+            <span class="larr">→</span>
+            <div class="mf amb">TRANSLACJA JSON<br>request → JSON → TRequest</div>
+            <span class="larr">→</span>
+            <div class="mf">MODUŁ B<br>zarejestrowana akcja</div>
+          </div>
+          <div style="font-size:15.5px; color:var(--ink-dim); margin:0 4px 14px; line-height:1.45;">Rejestr ścieżek (<span style="font-family:var(--font-mono); color:var(--ink);">ModuleRegistry</span>) mapuje string na akcję modułu docelowego. Serializacja JSON rozprzęga typy: każdy moduł operuje na własnej kopii danych. Wzorzec znany z systemów rozproszonych (routing po ścieżce), tylko wykonywany w jednym procesie.</div>
+<pre class="code" style="font-size:11px; line-height:1.45; margin:0; padding:14px 18px;"><span style="color:var(--purple-lt)">public async</span> <span style="color:#82AAFF">Task</span>&lt;TResult&gt; <span style="color:var(--teal-bright)">SendAsync</span>&lt;TResult&gt;(<span style="color:var(--purple-lt)">string</span> path, <span style="color:var(--purple-lt)">object</span> request,
+    <span style="color:#82AAFF">CancellationToken</span> cancellationToken = <span style="color:var(--purple-lt)">default</span>) <span style="color:var(--purple-lt)">where</span> TResult : <span style="color:var(--purple-lt)">class</span>
+{
+    <span style="color:var(--purple-lt)">var</span> registration = _moduleRegistry.<span style="color:#82AAFF">GetRequestRegistration</span>(path);
+    <span style="color:var(--purple-lt)">if</span> (registration <span style="color:var(--purple-lt)">is null</span>)
+        <span style="color:var(--purple-lt)">throw new</span> <span style="color:#82AAFF">InvalidOperationException</span>(<span style="color:#C3E88D">$"No action has been defined for path: '{path}'."</span>);
+
+    <span style="color:var(--ink-dim)">// translacja: obiekt nadawcy -&gt; JSON -&gt; typ odbiorcy</span>
+    <span style="color:var(--purple-lt)">var</span> receiverRequest = <span style="color:var(--amber)">TranslateType</span>(request, registration.RequestType);
+    <span style="color:var(--purple-lt)">var</span> result = <span style="color:var(--purple-lt)">await</span> registration.<span style="color:#82AAFF">Action</span>(receiverRequest, cancellationToken);
+
+    <span style="color:var(--purple-lt)">return</span> result <span style="color:var(--purple-lt)">is null</span> ? <span style="color:var(--purple-lt)">null</span> : <span style="color:var(--amber)">TranslateType</span>&lt;TResult&gt;(result);
+}
+
+<span style="color:var(--purple-lt)">private object</span> <span style="color:var(--amber)">TranslateType</span>(<span style="color:var(--purple-lt)">object</span> value, <span style="color:#82AAFF">Type</span> type)
+    =&gt; _moduleSerializer.<span style="color:#82AAFF">Deserialize</span>(_moduleSerializer.<span style="color:#82AAFF">Serialize</span>(value), type);</pre>
+          <div class="box warn" style="margin-top:16px;">⚠️ Moduł woła moduł przez rejestr i translację typów, <span class="gk">NIGDY przez wspólną bazę</span>. Baza jako kanał komunikacji = rozproszony monolit.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">30</span> / 43 }</div>
+      <aside class="notes">Druga opcja: bez współdzielenia nawet paczki kontraktów. Ścieżka jak w HTTP, ale wywołanie zostaje w procesie. Cena to brak sprawdzenia w czasie kompilacji; zysk to zero sprzężenia typów między modułami. I twarde ostrzeżenie: kanałem komunikacji nigdy nie jest baza sąsiada.</aside>
+    </section>
+
+    <!-- ============ 30 · KOD · SCRUTOR ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 5 · Komunikacja synchroniczna</div>
+        <h3 class="head" style="font-size:42px; margin-bottom:18px;"><span class="ac">SCRUTOR</span> I GENERYCZNY DISPATCH</h3>
+        <div class="vc">
+          <div class="codewrap mt">
+            <div class="chiprow"><span class="chip"><b>DZIEŃ 1</b>&nbsp;· GENERYKI</span></div>
+<pre class="code" style="font-size:12.5px; line-height:1.55; margin:0;"><span style="color:var(--ink-dim)">// jedna instrukcja rejestruje WSZYSTKIE handlery komend</span>
+services.<span style="color:var(--teal-bright)">Scan</span>(s =&gt; s.<span style="color:#82AAFF">FromAssemblies</span>(assemblies)
+    .<span style="color:#82AAFF">AddClasses</span>(c =&gt; c.<span style="color:var(--teal-bright)">AssignableTo</span>(<span style="color:var(--purple-lt)">typeof</span>(<span style="color:#82AAFF">ICommandHandler</span>&lt;&gt;)))
+    .<span style="color:var(--teal-bright)">AsImplementedInterfaces</span>()
+    .<span style="color:#82AAFF">WithScopedLifetime</span>());</pre>
+          </div>
+          <div class="codewrap" style="margin-top:24px;">
+            <div class="chiprow"><span class="chip chip-new"><b>NOWOŚĆ</b>&nbsp;· REFLEKSJA</span></div>
+<pre class="code" style="font-size:12.5px; line-height:1.55; margin:0;"><span style="color:var(--ink-dim)">// rejestr buduje wywołanie SendAsync&lt;TCommand&gt; dla typu znanego dopiero w runtime</span>
+registry.<span style="color:#82AAFF">AddBroadcastAction</span>(type, (message, cancellationToken) =&gt;
+    (<span style="color:#82AAFF">Task</span>) commandDispatcherType.<span style="color:#82AAFF">GetMethod</span>(<span style="color:var(--purple-lt)">nameof</span>(commandDispatcher.SendAsync))
+        ?.<span style="color:var(--teal-bright)">MakeGenericMethod</span>(type)
+        .<span style="color:#82AAFF">Invoke</span>(commandDispatcher, <span style="color:var(--purple-lt)">new</span>[] { message, cancellationToken }));</pre>
+          </div>
+          <div class="box" style="margin-top:24px;">🔑 Ani jednej ręcznej rejestracji handlera: dodajesz typ, <span class="gk">skaner go znajduje</span>. Generyki plus refleksja sklejają framework.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">31</span> / 43 }</div>
+      <aside class="notes">Ta sama refleksja co w ModuleLoaderze, teraz w dispatcherach: Scrutor skanuje DLL-ki i rejestruje handlery po konwencji, a MakeGenericMethod domyka generyki w runtime. Na koniec sekcji: zadanie Z2 w aplikacji (kontrakt komunikacji synchronicznej między modułami).</aside>
+    </section>
+
+    <!-- ============ 31 · DYWIDER S6 ============ -->
+    <section class="slide-divider variant-atmospheric">
+      <div class="stack">
+        <div class="num">SEKCJA 6</div>
+        <h2 style="font-size:84px; letter-spacing:-2px;">KOMUNIKACJA <span class="grad">ASYNCHRONICZNA</span></h2>
+        <div class="lead">Moduł publikuje fakt i wraca do pracy: kto chce, ten zareaguje.</div>
+      </div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">32</span> / 43 }</div>
+      <aside class="notes">Rozmowa synchroniczna wiąże moduły w czasie: wołający czeka. Teraz model odwrotny: publikuję zdarzenie i nie interesuje mnie, kto słucha.</aside>
+    </section>
+
+    <!-- ============ 32 · KOD · IN-MEMORY BROKER ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 6 · Komunikacja asynchroniczna</div>
+        <h3 class="head" style="font-size:38px; margin-bottom:14px;">IN-MEMORY BROKER I <span class="ac">IZOLACJA</span> TYPÓW</h3>
+        <div class="vc">
+          <div class="row" style="gap:14px; align-items:center; margin-bottom:8px;">
+            <div class="mf" style="background:var(--pill-bg); border:1px solid var(--line); border-radius:12px; padding:12px 18px; font-family:var(--font-mono); font-size:14px; color:var(--ink); text-align:center;">PRODUCENT</div>
+            <div style="font-family:var(--font-mono); font-size:12px; color:var(--amber); text-align:center;">✉ event<br>→</div>
+            <div class="mf" style="background:rgba(72,189,184,.08); border:1px solid rgba(72,189,184,.5); border-radius:12px; padding:12px 18px; font-family:var(--font-mono); font-size:14px; color:var(--teal-bright); text-align:center;">BROKER<br><span style="font-size:11px; color:var(--ink-dim);">hub</span></div>
+            <div class="constack">
+              <div class="conrow"><span class="env">✉ własna kopia →</span><div class="mf" style="background:var(--pill-bg); border:1px solid var(--line); border-radius:10px; font-family:var(--font-mono); color:var(--ink); text-align:center;">KONSUMENT 1</div></div>
+              <div class="conrow"><span class="env">✉ własna kopia →</span><div class="mf" style="background:var(--pill-bg); border:1px solid var(--line); border-radius:10px; font-family:var(--font-mono); color:var(--ink); text-align:center;">KONSUMENT 2</div></div>
+              <div class="conrow"><span class="env">✉ własna kopia →</span><div class="mf" style="background:var(--pill-bg); border:1px solid var(--line); border-radius:10px; font-family:var(--font-mono); color:var(--ink); text-align:center;">KONSUMENT N</div></div>
+            </div>
+          </div>
+          <div style="font-size:15px; color:var(--ink-dim); margin:0 4px 12px; line-height:1.4;">Event to rekord. Broker rozsyła go do zera lub wielu odbiorców. Każdy odbiorca dostaje kopię przez re-serializację, więc nikt nie trzyma referencji do cudzego obiektu.</div>
+          <div class="codewrap mt">
+            <div class="chiprow"><span class="chip"><b>DZIEŃ 1</b>&nbsp;· RECORD</span></div>
+<pre class="code" style="font-size:10.5px; line-height:1.4; margin:0; padding:13px 16px;"><span style="color:var(--purple-lt)">public record</span> <span style="color:#82AAFF">ParkingSpotCreated</span>(<span style="color:#82AAFF">Guid</span> ParkingSpotId) : <span style="color:#82AAFF">IEvent</span>;
+
+<span style="color:var(--purple-lt)">public async</span> <span style="color:#82AAFF">Task</span> <span style="color:var(--teal-bright)">PublishAsync</span>(<span style="color:var(--purple-lt)">object</span> message, <span style="color:#82AAFF">CancellationToken</span> cancellationToken = <span style="color:var(--purple-lt)">default</span>)
+{
+    <span style="color:var(--purple-lt)">var</span> key = message.<span style="color:#82AAFF">GetType</span>().Name;
+    <span style="color:var(--purple-lt)">var</span> registrations = _moduleRegistry.<span style="color:#82AAFF">GetBroadcastRegistrations</span>(key)
+        .<span style="color:#82AAFF">Where</span>(r =&gt; r.ReceiverType != message.<span style="color:#82AAFF">GetType</span>());
+
+    <span style="color:var(--purple-lt)">var</span> tasks = <span style="color:var(--purple-lt)">new</span> <span style="color:#82AAFF">List</span>&lt;<span style="color:#82AAFF">Task</span>&gt;();
+    <span style="color:var(--purple-lt)">foreach</span> (<span style="color:var(--purple-lt)">var</span> registration <span style="color:var(--purple-lt)">in</span> registrations)
+    {
+        <span style="color:var(--ink-dim)">// każdy odbiorca dostaje własną kopię: serialize -&gt; deserialize</span>
+        <span style="color:var(--purple-lt)">var</span> receiverMessage = <span style="color:var(--amber)">TranslateType</span>(message, registration.ReceiverType);
+        tasks.<span style="color:#82AAFF">Add</span>(registration.<span style="color:#82AAFF">Action</span>(receiverMessage, cancellationToken));
+    }
+    <span style="color:var(--purple-lt)">await</span> <span style="color:#82AAFF">Task</span>.<span style="color:#82AAFF">WhenAll</span>(tasks);
+}</pre>
+          </div>
+          <div class="box" style="margin-top:16px;">🔑 Rekord z Dnia 1 jako event: <span class="gk">niemutowalny fakt</span>. Izolacja przez re-serializację zamiast współdzielonej referencji.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">33</span> / 43 }</div>
+      <aside class="notes">Pamiętacie, dlaczego rekord jest niemutowalny? Event to fakt z przeszłości, faktu się nie edytuje. A TranslateType gwarantuje, że konsument nie zmodyfikuje obiektu producenta, bo fizycznie dostaje inny obiekt.</aside>
+    </section>
+
+    <!-- ============ 33 · KOD · CHANNELS ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 6 · Komunikacja asynchroniczna</div>
+        <h3 class="head" style="font-size:38px; margin-bottom:16px;"><span class="ac">CHANNELS</span> I BACKGROUND SERVICE: DISPATCHER W TLE</h3>
+        <div class="vc">
+          <div class="codewrap mt">
+            <div class="chiprow"><span class="chip"><b>DZIEŃ 1</b>&nbsp;· ASYNC/AWAIT</span></div>
+<pre class="code" style="font-size:11px; line-height:1.42; margin:0; padding:14px 18px;"><span style="color:var(--purple-lt)">public sealed class</span> <span style="color:#82AAFF">MessageChannel</span> : <span style="color:#82AAFF">IMessageChannel</span>
+{
+    <span style="color:var(--ink-dim)">// kolejka in-process: producent pisze, konsument czyta</span>
+    <span style="color:var(--purple-lt)">private readonly</span> <span style="color:#82AAFF">Channel</span>&lt;<span style="color:#82AAFF">MessageEnvelope</span>&gt; _messages = <span style="color:#82AAFF">Channel</span>.<span style="color:var(--teal-bright)">CreateUnbounded</span>&lt;<span style="color:#82AAFF">MessageEnvelope</span>&gt;();
+
+    <span style="color:var(--purple-lt)">public</span> <span style="color:#82AAFF">ChannelReader</span>&lt;<span style="color:#82AAFF">MessageEnvelope</span>&gt; Reader =&gt; _messages.Reader;
+    <span style="color:var(--purple-lt)">public</span> <span style="color:#82AAFF">ChannelWriter</span>&lt;<span style="color:#82AAFF">MessageEnvelope</span>&gt; Writer =&gt; _messages.Writer;
+}</pre>
+          </div>
+          <div class="codewrap" style="margin-top:20px;">
+            <div class="chiprow"><span class="chip"><b>DZIEŃ 2</b>&nbsp;· BACKGROUND SERVICE</span></div>
+<pre class="code" style="font-size:11px; line-height:1.42; margin:0; padding:14px 18px;"><span style="color:var(--purple-lt)">public sealed class</span> <span style="color:#82AAFF">AsyncDispatcherJob</span> : <span style="color:#82AAFF">BackgroundService</span>
+{
+    <span style="color:var(--purple-lt)">protected override async</span> <span style="color:#82AAFF">Task</span> <span style="color:var(--teal-bright)">ExecuteAsync</span>(<span style="color:#82AAFF">CancellationToken</span> stoppingToken)
+    {
+        <span style="color:var(--ink-dim)">// czyta kanał w tle i publikuje do brokera</span>
+        <span style="color:var(--purple-lt)">await foreach</span> (<span style="color:var(--purple-lt)">var</span> envelope <span style="color:var(--purple-lt)">in</span> _messageChannel.Reader.<span style="color:#82AAFF">ReadAllAsync</span>(stoppingToken))
+        {
+            <span style="color:var(--purple-lt)">await</span> _moduleClient.<span style="color:#82AAFF">PublishAsync</span>(envelope.Message, stoppingToken);
+        }
+    }
+}</pre>
+          </div>
+          <div class="box" style="margin-top:16px;">🔑 Publikujący <span class="gk">nie czeka na odbiorców</span>. Background service z Dnia 2 plus async z Dnia 1 dają asynchroniczność bez brokera zewnętrznego.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">34</span> / 43 }</div>
+      <aside class="notes">Pamiętacie BackgroundService z Dnia 2? Tu jest jego produkcyjne zastosowanie. Producent tylko wrzuca wiadomość do Writera i wraca do obsługi żądania; osobna pętla w tle rozdaje ją odbiorcom. To jest broker wiadomości w miniaturze, w jednym procesie.</aside>
+    </section>
+
+    <!-- ============ 34 · FLOW · PARKINGSPOTS → MAPPER → AVAILABILITY ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 6 · Komunikacja asynchroniczna</div>
+        <h3 class="head" style="font-size:38px; margin-bottom:16px;">PRZEPŁYW: PARKINGSPOTS → <span class="ac">MAPPER</span> → AVAILABILITY</h3>
+        <div class="vc">
+          <div class="acf">
+            <div class="acf-track">
+              <div class="acf-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg><div class="acn">ParkingSpots</div></div>
+              <div class="acf-arr"><div class="ae">✉ ParkingSpotCreated</div><div class="aar">→</div></div>
+              <div class="acf-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg><div class="acn">Mapper</div></div>
+              <div class="acf-arr"><div class="ae">✉ AddResource</div><div class="aar">→</div></div>
+              <div class="acf-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v17a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H3"/><path d="m16 19 2 2 4-4"/></svg><div class="acn">Availability</div></div>
+            </div>
+            <div class="acf-desc">
+              <div class="acf-d"><b>Publikuje fakt:</b> powstało nowe miejsce parkingowe.</div>
+              <div class="acf-d"><b>Tłumaczy.</b> IEventHandler&lt;ParkingSpotCreated&gt; zamienia fakt na komendę w języku sąsiada.</div>
+              <div class="acf-d"><b>Przyjmuje komendę</b> i rejestruje nowy zasób do rezerwacji.</div>
+            </div>
+          </div>
+<pre class="code" style="font-size:11px; line-height:1.45; margin:16px 0 0; padding:14px 18px;"><span style="color:var(--purple-lt)">public record</span> <span style="color:#82AAFF">ParkingSpotCreated</span>(<span style="color:#82AAFF">Guid</span> ParkingSpotId) : <span style="color:#82AAFF">IEvent</span>;
+<span style="color:var(--purple-lt)">public record</span> <span style="color:#82AAFF">AddResource</span>(<span style="color:#82AAFF">Guid</span> ResourceId, <span style="color:var(--purple-lt)">int</span> Capacity, <span style="color:#82AAFF">IEnumerable</span>&lt;<span style="color:var(--purple-lt)">string</span>&gt; Tags) : <span style="color:#82AAFF">ICommand</span>;
+
+<span style="color:var(--purple-lt)">internal sealed class</span> <span style="color:#82AAFF">Mapper</span> : <span style="color:var(--teal-bright)">IEventHandler&lt;ParkingSpotCreated&gt;</span>, <span style="color:var(--teal-bright)">IEventHandler&lt;ParkingSpotDeleted&gt;</span>
+{
+    <span style="color:var(--ink-dim)">// ciało handlerów: zadanie Z3</span>
+}</pre>
+          <div class="box" style="margin-top:16px;">🔑 ParkingSpots nie woła Availability. Publikuje fakt, a <span class="gk">Mapper tłumaczy go na język sąsiada</span>: warstwa antykorupcyjna.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">35</span> / 43 }</div>
+      <aside class="notes">Domknięcie obu sekcji o komunikacji na jednym realnym przepływie. Pytanie do grupy: co dostanie Availability, gdy ParkingSpots opublikuje ParkingSpotCreated? ParkingSpots nie wie, że Availability istnieje; Mapper zna oba języki i tłumaczy. Na koniec sekcji: zadanie Z3 w aplikacji (ciało Mappera).</aside>
+    </section>
+
+    <!-- ============ 36 · DYWIDER S7 ============ -->
+    <section class="slide-divider variant-atmospheric">
+      <div class="stack">
+        <div class="num">SEKCJA 7</div>
+        <h2 style="font-size:72px; letter-spacing:-2px;">ZEWNĘTRZNE <span class="grad">ZALEŻNOŚCI</span> I ODPORNOŚĆ</h2>
+        <div class="lead">Notifications woła zewnętrzne API po HTTP: granica sieciowa rządzi się innymi prawami niż wywołanie w pamięci.</div>
+      </div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">36</span> / 43 }</div>
+      <aside class="notes">Do tej pory wszystko działo się w jednym procesie. Notifications jako jedyny moduł wychodzi na zewnątrz po HTTP i to zmienia zasady gry: sieć zawodzi, usługa mailowa zwraca 500. Najpierw jak się takiego klienta w ogóle konfiguruje, potem jak go uodpornić.</aside>
+    </section>
+
+    <!-- ============ 37 · KOD · HTTPCLIENT I IHTTPCLIENTFACTORY ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 7 · Zewnętrzne zależności i odporność</div>
+        <h3 class="head" style="font-size:38px; margin-bottom:10px;">HTTPCLIENT I <span class="ac">IHTTPCLIENTFACTORY</span></h3>
+        <div class="chiprow" style="margin-bottom:16px;"><span class="chip chip-new"><b>NOWOŚĆ</b>&nbsp;· IHTTPCLIENTFACTORY</span></div>
+        <div class="vc" style="justify-content:flex-start;">
+          <div class="c3grid">
+            <div class="c3 a"><div class="ct">Podstawowy</div><div class="cs">tak dziś robi EmailApiClient</div><div class="cd">Rejestracja fabryki, klient tworzony w kodzie. Adres i nagłówki skleja konsument.</div>
+<pre class="code" style="font-size:10.5px; line-height:1.45; margin:0; padding:10px 12px;"><span style="color:var(--ink-dim)">// Shared.Infrastructure</span>
+services.<span style="color:var(--teal-bright)">AddHttpClient</span>();
+
+<span style="color:var(--ink-dim)">// Notifications/Clients/EmailApiClient</span>
+<span style="color:var(--purple-lt)">var</span> client = _factory.<span style="color:var(--teal-bright)">CreateClient</span>();
+<span style="color:var(--purple-lt)">await</span> client.<span style="color:#82AAFF">PostAsJsonAsync</span>(
+    <span style="color:#C3E88D">$"{Url}/send-email"</span>, payload);</pre>
+            </div>
+            <div class="c3 p"><div class="ct">Named client</div><div class="cs">konfiguracja pod nazwą</div><div class="cd">Adres i ustawienia wędrują do rejestracji. Konsument prosi o klienta po nazwie.</div>
+<pre class="code" style="font-size:10.5px; line-height:1.45; margin:0; padding:10px 12px;">services.<span style="color:var(--teal-bright)">AddHttpClient</span>(<span style="color:#C3E88D">"email"</span>, client =&gt;
+    client.BaseAddress =
+        <span style="color:var(--purple-lt)">new</span> <span style="color:#82AAFF">Uri</span>(<span style="color:#C3E88D">"http://localhost:5090"</span>));
+
+<span style="color:var(--ink-dim)">// konsument</span>
+<span style="color:var(--purple-lt)">var</span> client = _factory.<span style="color:var(--teal-bright)">CreateClient</span>(<span style="color:#C3E88D">"email"</span>);</pre>
+            </div>
+            <div class="c3 t"><div class="ct">Typed client</div><div class="cs">klient jako usługa w DI</div><div class="cd">Kontener wstrzykuje skonfigurowany HttpClient prosto do klasy klienta.</div>
+<pre class="code" style="font-size:10.5px; line-height:1.45; margin:0; padding:10px 12px;">services.<span style="color:var(--teal-bright)">AddHttpClient</span>&lt;<span style="color:#82AAFF">IEmailApiClient</span>,
+    <span style="color:#82AAFF">EmailApiClient</span>&gt;(client =&gt;
+        client.BaseAddress =
+            <span style="color:var(--purple-lt)">new</span> <span style="color:#82AAFF">Uri</span>(<span style="color:#C3E88D">"http://localhost:5090"</span>));
+
+<span style="color:var(--ink-dim)">// konsument wstrzykuje IEmailApiClient</span></pre>
+            </div>
+          </div>
+          <div class="box" style="margin-top:22px;">🔑 Fabryka zarządza <span class="gk">pulą handlerów</span> pod spodem (koniec z wyczerpanymi socketami), a named i typed client przenoszą <span class="gk">konfigurację per klient</span> do rejestracji w DI.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">37</span> / 43 }</div>
+      <aside class="notes">HttpClienta nie tworzy się przez new: fabryka współdzieli handlery i pilnuje socketów. Trzy warianty rosnącej wygody: MySpot używa dziś podstawowego (CreateClient bez nazwy, adres sklejony w kliencie), named przenosi konfigurację do rejestracji, typed domyka sprawę: konsument dostaje gotową usługę z DI. Naturalny kierunek dla EmailApiClient to wariant typed.</aside>
+    </section>
+
+    <!-- ============ 38 · KOD · POLLY ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 7 · Zewnętrzne zależności i odporność</div>
+        <h3 class="head" style="font-size:38px; margin-bottom:16px;">ODPORNOŚĆ NA GRANICY SIECIOWEJ: <span class="ac">POLLY</span></h3>
+        <div class="vc">
+          <div class="row" style="gap:16px; align-items:stretch; margin-bottom:18px;">
+            <div class="cbox after" style="padding:14px 18px;"><div class="cbt" style="font-size:16px; margin-bottom:6px;">Wewnątrz procesu</div><div class="cbd" style="font-size:14.5px;">Wywołanie modułu albo działa, albo od razu rzuca wyjątek. Odporność zbędna.</div></div>
+            <div class="cbox now" style="padding:14px 18px;"><div class="cbt" style="font-size:16px; margin-bottom:6px;">Po HTTP</div><div class="cbd" style="font-size:14.5px;">Sieć miewa opóźnienia i zrywa połączenia, usługa miewa 500 i 503. Strategia odporności obowiązkowa.</div></div>
+          </div>
+<pre class="code" style="font-size:12.5px; line-height:1.55; margin:0;"><span style="color:var(--ink-dim)">// typed client z poprzedniego slajdu + pełna strategia w jednej linii</span>
+services.<span style="color:#82AAFF">AddHttpClient</span>&lt;<span style="color:#82AAFF">IEmailApiClient</span>, <span style="color:#82AAFF">EmailApiClient</span>&gt;()
+    .<span style="color:var(--teal-bright)">AddStandardResilienceHandler</span>(); <span style="color:var(--ink-dim)">// Microsoft.Extensions.Http.Resilience (Polly)</span></pre>
+          <div class="row" style="gap:14px; align-items:stretch; margin-top:18px;">
+            <div class="rcard" style="flex:1;"><div style="font-family:var(--font-head); font-weight:800; text-transform:uppercase; font-size:15px; color:var(--teal); letter-spacing:.4px;">Retry z backoffem</div><div class="rd" style="font-size:15px;">Ponawia nieudane próby z rosnącym odstępem.</div></div>
+            <div class="rcard" style="flex:1;"><div style="font-family:var(--font-head); font-weight:800; text-transform:uppercase; font-size:15px; color:var(--teal); letter-spacing:.4px;">Circuit breaker</div><div class="rd" style="font-size:15px;">Po serii błędów odcina ruch i daje usłudze odetchnąć.</div></div>
+            <div class="rcard" style="flex:1;"><div style="font-family:var(--font-head); font-weight:800; text-transform:uppercase; font-size:15px; color:var(--teal); letter-spacing:.4px;">Timeout</div><div class="rd" style="font-size:15px;">Limit czasu na pojedynczą próbę i na całość wywołania.</div></div>
+          </div>
+          <div class="box warn" style="margin-top:18px;">⚠️ Dziś EmailApiClient nie ma żadnej odporności: <span class="gk">jedna próba i wyjątek</span>. Ta jedna linia to gotowa wartość do dopisania w MySpocie.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">38</span> / 43 }</div>
+      <aside class="notes">Kontrast: wewnątrz procesu retry nic nie daje, na granicy sieciowej jest obowiązkowy. AddStandardResilienceHandler to Polly opakowane przez Microsoft: retry z backoffem, circuit breaker i dwa timeouty w jednej linii, z sensownymi domyślnymi wartościami. Na koniec: zadanie Z4 w aplikacji (typed client + AddStandardResilienceHandler na EmailApiClient).</aside>
+    </section>
+
+    <!-- ============ 39 · DYWIDER S8 ============ -->
+    <section class="slide-divider variant-atmospheric">
+      <div class="stack">
+        <div class="num">SEKCJA 8</div>
+        <h2><span class="grad">OBSERVABILITY</span></h2>
+        <div class="lead">Jak zobaczyć, co aplikacja naprawdę robi: od ręcznie doklejanych identyfikatorów do standardowych trace'ów.</div>
+      </div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">39</span> / 43 }</div>
+      <aside class="notes">Ostatnia sekcja. MySpot loguje sporo, ale ręcznie. Pokażemy, że platforma ma telemetrię wbudowaną i że jest branżowy standard, który ją zbiera i eksportuje.</aside>
+    </section>
+
+    <!-- ============ 40 · KOD · ACTIVITY I ACTIVITYSOURCE ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 8 · Observability</div>
+        <h3 class="head" style="font-size:38px; margin-bottom:10px;">ACTIVITY I ACTIVITYSOURCE: TELEMETRIA W <span class="ac">BCL</span></h3>
+        <div class="chiprow" style="margin-bottom:16px;"><span class="chip chip-new"><b>NOWOŚĆ</b>&nbsp;· ACTIVITYSOURCE</span></div>
+        <div class="vc" style="justify-content:flex-start;">
+          <div class="row" style="gap:16px; align-items:stretch; margin-bottom:18px;">
+            <div class="cbox now" style="padding:14px 18px;"><div class="cbt" style="font-size:16px; margin-bottom:6px;">MySpot dziś</div><div class="cbd" style="font-size:14.5px;">InMemoryMessageBroker ręcznie dokleja TraceId i CorrelationId do każdego logu.</div></div>
+            <div class="cbox after" style="padding:14px 18px;"><div class="cbt" style="font-size:16px; margin-bottom:6px;">Wbudowane w .NET</div><div class="cbd" style="font-size:14.5px;">System.Diagnostics: Activity niesie TraceId i propaguje go sam przez cały przepływ.</div></div>
+          </div>
+<pre class="code" style="font-size:12px; line-height:1.55; margin:0;"><span style="color:var(--ink-dim)">// System.Diagnostics: BCL, zero pakietów NuGet</span>
+<span style="color:var(--purple-lt)">private static readonly</span> <span style="color:#82AAFF">ActivitySource</span> Source = <span style="color:var(--purple-lt)">new</span>(<span style="color:#C3E88D">"MySpot.Messaging"</span>);
+
+<span style="color:var(--purple-lt)">public async</span> <span style="color:#82AAFF">Task</span> <span style="color:#82AAFF">PublishAsync</span>(<span style="color:var(--purple-lt)">object</span> message, <span style="color:#82AAFF">CancellationToken</span> cancellationToken = <span style="color:var(--purple-lt)">default</span>)
+{
+    <span style="color:var(--purple-lt)">using var</span> activity = Source.<span style="color:var(--teal-bright)">StartActivity</span>(<span style="color:#C3E88D">"PublishMessage"</span>); <span style="color:var(--ink-dim)">// span: TraceId + czas trwania</span>
+    activity?.<span style="color:var(--teal-bright)">SetTag</span>(<span style="color:#C3E88D">"message.type"</span>, name);                     <span style="color:var(--ink-dim)">// atrybut zamiast sklejania stringów</span>
+    <span style="color:var(--ink-dim)">// ... publikacja jak dotychczas</span>
+}</pre>
+          <div class="box" style="margin-top:20px;">🔑 Activity to jednostka trace'a. Identyfikatory, które broker dziś <span class="gk">dokleja ręcznie do logów</span>, ActivitySource niesie i <span class="gk">propaguje standardowo</span>.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">40</span> / 43 }</div>
+      <aside class="notes">Telemetria nie przyszła do .NET z zewnątrz: Activity i ActivitySource siedzą w BCL, w System.Diagnostics. Hook do MySpota: broker loguje TraceId i CorrelationId ręcznie w każdym logu. StartActivity robi to samo standardowo: tworzy span z identyfikatorami, mierzy czas, a tagi zastępują sklejanie stringów. Sam ActivitySource jeszcze niczego nie wysyła: od zbierania i eksportu jest następny slajd.</aside>
+    </section>
+
+    <!-- ============ 41 · KOD · OPENTELEMETRY ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Sekcja 8 · Observability</div>
+        <h3 class="head" style="font-size:38px; margin-bottom:16px;">OPENTELEMETRY: INSTRUMENTACJA I <span class="ac">EKSPORT</span></h3>
+        <div class="vc">
+          <div class="row" style="gap:24px; align-items:stretch;">
+            <div style="flex:1.5; min-width:0; display:flex; flex-direction:column; justify-content:center;">
+<pre class="code" style="font-size:11.5px; line-height:1.6; margin:0;">services.<span style="color:var(--teal-bright)">AddOpenTelemetry</span>()
+    .<span style="color:var(--teal-bright)">WithTracing</span>(tracing =&gt; tracing
+        .<span style="color:#82AAFF">AddAspNetCoreInstrumentation</span>() <span style="color:var(--ink-dim)">// każde żądanie HTTP jako span, gotowe</span>
+        .<span style="color:#82AAFF">AddHttpClientInstrumentation</span>() <span style="color:var(--ink-dim)">// wychodzące też (EmailApiClient)</span>
+        .<span style="color:#82AAFF">AddSource</span>(<span style="color:#C3E88D">"MySpot.Messaging"</span>)   <span style="color:var(--ink-dim)">// własne ActivitySource z poprzedniego slajdu</span>
+        .<span style="color:#82AAFF">AddOtlpExporter</span>(otlp =&gt;         <span style="color:var(--ink-dim)">// eksport w standardzie OTLP</span>
+            otlp.Endpoint = <span style="color:var(--purple-lt)">new</span> <span style="color:#82AAFF">Uri</span>(<span style="color:#C3E88D">"http://localhost:4317"</span>))); <span style="color:var(--ink-dim)">// collector / Jaeger</span></pre>
+            </div>
+            <div style="flex:0 0 330px; display:flex; flex-direction:column; justify-content:center;">
+              <div style="border:1px solid var(--line); border-radius:14px; background:var(--pill-bg); padding:16px 18px; display:flex; flex-direction:column; gap:10px;">
+                <div style="font-family:var(--font-head); font-weight:700; text-transform:uppercase; font-size:13px; letter-spacing:.8px; color:var(--teal);">Jeden trace przez trzy moduły</div>
+                <div class="wf">
+                  <div class="wr"><span>ParkingSpots</span><div class="wb" style="width:38%;"></div></div>
+                  <div class="wr"><span>Mapper</span><div class="wb" style="width:24%; margin-left:34%;"></div></div>
+                  <div class="wr"><span>Availability</span><div class="wb" style="width:34%; margin-left:52%;"></div></div>
+                </div>
+                <div style="font-size:13px; color:var(--ink-dim); line-height:1.4;">Przepływ z sekcji o komunikacji jako jedna oś czasu w Jaegerze.</div>
+              </div>
+            </div>
+          </div>
+          <div class="box" style="margin-top:22px;">🔑 Instrumentacja ASP.NET Core i HttpClient jest <span class="gk">gotowa w pakietach</span>, własne źródła wpina AddSource. Wartość do dopisania w MySpocie: eksport OTLP i pełny obraz przepływu.</div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">41</span> / 43 }</div>
+      <aside class="notes">OpenTelemetry zbiera to, co platforma i ActivitySource emitują, i eksportuje w jednym standardzie: OTLP do collectora albo Jaegera. Instrumentacje ASP.NET Core i HttpClient są gotowe, własne źródła dopisuje się jedną linią AddSource. Efekt na obrazku: przepływ ParkingSpots, Mapper, Availability jako jeden trace. W MySpocie do dopisania: nasz snippet, nie wymysł.</aside>
+    </section>
+
+    <!-- ============ 38 · MAPA · KLAMRA SZKOLENIA ============ -->
+    <section class="d1">
+      <div class="stage12"><div class="frame">
+        <div class="sect-mark">Zamknięcie</div>
+        <h3 class="head" style="font-size:40px; margin-bottom:20px;">CO Z DNI 1-3 <span class="ac">ZOBACZYLIŚCIE</span> W PROJEKCIE</h3>
+        <div class="vc">
+          <div class="panel">
+            <div class="pt">Mapa dnia: temat → miejsce w MySpocie</div>
+            <div class="pairs2">
+              <div class="pair2"><span class="chip"><b>DZIEŃ 1</b>&nbsp;· RECORD</span><span class="parr">→</span><span class="pb">komendy i eventy</span></div>
+              <div class="pair2"><span class="chip"><b>DZIEŃ 2</b>&nbsp;· DI</span><span class="parr">→</span><span class="pb">composition root i port/adapter</span></div>
+              <div class="pair2"><span class="chip"><b>DZIEŃ 1</b>&nbsp;· GENERYKI</span><span class="parr">→</span><span class="pb">ICommandHandler&lt;T&gt; i dispatcher</span></div>
+              <div class="pair2"><span class="chip"><b>DZIEŃ 2</b>&nbsp;· MIDDLEWARE</span><span class="parr">→</span><span class="pb">pipeline Bootstrappera</span></div>
+              <div class="pair2"><span class="chip"><b>DZIEŃ 1</b>&nbsp;· HERMETYZACJA</span><span class="parr">→</span><span class="pb">agregat Resource</span></div>
+              <div class="pair2"><span class="chip"><b>DZIEŃ 2</b>&nbsp;· KONFIGURACJA</span><span class="parr">→</span><span class="pb">module.*.json</span></div>
+              <div class="pair2"><span class="chip"><b>DZIEŃ 1</b>&nbsp;· MODYFIKATORY DOSTĘPNOŚCI</span><span class="parr">→</span><span class="pb">kontrakty *.Shared</span></div>
+              <div class="pair2"><span class="chip"><b>DZIEŃ 2</b>&nbsp;· BACKGROUND SERVICE</span><span class="parr">→</span><span class="pb">dispatcher eventów</span></div>
+              <div class="pair2"><span class="chip"><b>DZIEŃ 3</b>&nbsp;· TOOLING</span><span class="parr">→</span><span class="pb">solucja wieloprojektowa i testy</span></div>
+              <div class="pair2"><span class="chip chip-new"><b>NOWOŚĆ</b>&nbsp;· REFLEKSJA</span><span class="parr">→</span><span class="pb">ModuleLoader i Scrutor</span></div>
+            </div>
+            <div class="pfoot">Standard realnego projektu .NET. Wszystko, czego się uczyliście, tu pracuje.</div>
+          </div>
+        </div>
+      </div></div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">42</span> / 43 }</div>
+      <aside class="notes">To są dokładnie te chipy, które widzieliście przez cały dzień, zebrane w jedną mapę. Nie było dziś ani jednej rzeczy wziętej z kosmosu: jedna nowość (refleksja) i trzy dni fundamentów w produkcyjnym układzie.</aside>
+    </section>
+
+    <!-- ============ 39 · ZAKOŃCZENIE ============ -->
+    <section class="slide-divider variant-atmospheric">
+      <div class="stack">
+        <div class="num">Dziękujemy</div>
+        <h2 style="font-size:104px; letter-spacing:-4px;"><span class="grad">DZIĘKUJEMY</span></h2>
+        <div class="lead">Cztery dni od składni C# do architektury realnego projektu. Ankieta czeka w aplikacji szkoleniowej.</div>
+      </div>
+      <div class="chrome-logo"></div>
+      <div class="chrome-num">{ <span class="b">43</span> / 43 }</div>
+      <aside class="notes">Podziękowanie, odesłanie do ankiety w apce, zaproszenie do pytań. Kod MySpota zostaje z wami: warto do niego wracać jako do wzorca setupu projektu.</aside>
+    </section>
+
+  </div>
+</div>
+
+<!-- Icon bundles -->
+<script src="vendor/lucide/lucide-bundle.js?v=1"></script>
+<script src="vendor/devicon/devicon-bundle.js?v=1"></script>
+
+<!-- D3 v7 vendored + DevMentors render helpers -->
+<script src="vendor/d3/d3.v7.min.js?v=1"></script>
+<script src="vendor/d3/d3-helpers.js?v=1"></script>
+
+<script src="vendor/reveal.js/reveal.js"></script>
+<script src="vendor/reveal.js/notes.js"></script>
+<script>
+Reveal.initialize({
+  plugins: [ RevealNotes ],
+  width: 1920,
+  height: 1080,
+  margin: 0,
+  controls: false,
+  controlsTutorial: false,
+  progress: true,
+  slideNumber: false,
+  hash: true,
+  transition: 'fade',
+  transitionSpeed: 'fast',
+  backgroundTransition: 'none',
+  display: 'grid',
+});
+</script>
+</body>
+</html>
